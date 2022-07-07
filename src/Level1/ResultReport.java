@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 public class ResultReport {
     public static void main(String[] args) {
+        //신고 결과 받기(2022 KAKAO BLIND RECRUITMENT)
         String[] id_list = {"muzi", "frodo", "apeach", "neo"};
         String[] report = {"muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"};
         int k = 2;
