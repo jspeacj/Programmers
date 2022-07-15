@@ -14,10 +14,7 @@ public class PonKetMon {
         // 중복제거
         nums = Arrays.stream(nums).distinct().toArray();
 
-        if (choice >= nums.length) { //선택해야할 폰켓몬 수가 중복 제거 한 배열수보다 크거나 같을 경우
-            System.out.println(nums.length);
-        } else { // 선택해야할 폰켓몬 수가, 중복 제거 한 배열 수보다 작을 경우
-            System.out.println(choice);
-        }
+        //가져갈 포켓몬 수 choice, 중복 제거된 배열 nums중 작은 값을 리턴한다.
+        System.out.println(Math.min(choice, nums.length));
     }
 }
