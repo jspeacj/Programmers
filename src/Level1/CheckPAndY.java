@@ -19,7 +19,9 @@ public class CheckPAndY {
         if (indexP == -1) return 0;
 
         while (true) {
-            if (s.indexOf("p", indexP) == -1) break;
+            indexP = s.indexOf("p", indexP);
+
+            if (indexP == -1) break;
 
             indexP++;
             countP++;
@@ -35,7 +37,9 @@ public class CheckPAndY {
         if (indexY == -1) return 0;
 
         while (true) {
-            if (s.indexOf("y", indexY) == -1) break;
+            indexY = s.indexOf("y", indexY);
+
+            if (indexY == -1) break;
 
             indexY++;
             countY++;
