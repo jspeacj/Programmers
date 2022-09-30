@@ -17,16 +17,25 @@ public class MinDivisorMaxMultiple {
         3	12	[3, 12]
         2	5	[1, 10]
          */
-        int n = 3;
-        int m = 12;
+        int n = 1071;
+        int m = 1029;
 
         int[] answer = new int[2];
 
-        for(int i = 1; i < n + m; i++) {
-            if (n % i == 0 && m % i == 0) answer[0] = i;
+        int bigest = Math.max(n, m); // 큰 값
+        int smallest = Math.min(n, m); // 작은 값
+        int smallestTemp = smallest; // 이후 반복문에서 나머지 값을 담아두기 위한 변수
+        int r = bigest % smallest; // 나머지
+
+        while (true) {
+            if (smallestTemp % r == 0) break;
+
+            smallestTemp = r;
+            r = smallest % r;
         }
 
-        answer[1] = (n * m) / answer[0];
+        answer[0] = r; // 최대공약수
+        answer[1] = (n * m) / answer[0]; // 최소 공배수
         System.out.println(Arrays.toString(answer));
     }
 }
