@@ -31,7 +31,7 @@ public class WeirdCharacter {
 
         for(String ss : array) {
             cnt = ss.contains(" ") ? 0 : cnt + 1;
-            answer += cnt%2 == 0 ? ss.toLowerCase() : ss.toUpperCase();
+            answer += cnt % 2 == 0 ? ss.toLowerCase() : ss.toUpperCase();
         }
 
         System.out.println(answer);
