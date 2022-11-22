@@ -5,6 +5,7 @@ import java.util.Arrays;
 public class MinimumRectangle {
     public static void main(String[] args) {
         /*
+            최소직사각형
             문제 설명
             명함 지갑을 만드는 회사에서 지갑의 크기를 정하려고 합니다.
             다양한 모양과 크기의 명함들을 모두 수납할 수 있으면서, 작아서 들고 다니기 편한 지갑을 만들어야 합니다.
@@ -66,14 +67,30 @@ public class MinimumRectangle {
         //int[][] sizes = {{10, 7}, {12, 3}, {8, 15}, {14, 7}, {5, 15}};
         //int[][] sizes = {{60, 50}, {30, 70}, {60, 30}, {80, 40}};
         int[][] sizes = {{14, 4}, {19, 6}, {6, 16}, {18, 7}, {7, 11}};
+
         int[][] sizesReverse = new int[sizes.length][sizes[0].length];
         int[][] sizesCom = new int[sizes.length * 2][sizes[0].length];
+        int minX = 1001; // 최소 가로 길이
+        int minY = 1001; // 최소 세로 길이
+        int sum = 0; // 최초 minX(또는minY)값을 찾기 위한 변수
+        
+        //전달받은 배열 sizes의 모든 인덱스들의 x,y값을 합친 값이 가장 큰 인덱스의 x,y의 값을 계산해서 큰 값이 가로(또는 세로)길이가 된다.
+        int cnt = findMaxValue(sizes);
 
+        // 찾은 인덱스에서 가로 길이가 세로 길이보다 클 경우 minX에, 세로 길이가 가로 길이보다 클 경우minY에 담는다
+        if (sizes[cnt][0] > sizes[cnt][1]) minX = sizes[cnt][0];
+        else minY = sizes[cnt][1];
+
+        //이후 해당 변수 cnt를 재사용하기 위해 초기화
+        cnt = 0;
+
+        // 전달받은 배열 sizes의 가로 세로 길이를 뒤집은 값을 담는다.
         for (int index = 0; index < sizes.length; index++) {
             sizesReverse[index][0] = sizes[index][1];
             sizesReverse[index][1] = sizes[index][0];
         }
 
+        // 2차원 배열 sizesCom에다가 전달받은 배열 sizes + 가로/세로 뒤집은 변수sizesReverse를 담는다
         for (int i = 0; i < sizesCom.length; i++) {
                 if (i < sizesCom.length / 2) {
                     sizesCom[i][0] = sizes[i][0];
@@ -87,7 +104,31 @@ public class MinimumRectangle {
         for (int k = 0; k < sizesCom.length; k++) {
             System.out.println(Arrays.toString(sizesCom[k]));
         }
+    }
 
+    /*
+        전달받은 배열 sizes의 모든 인덱스들의 x,y값을 합친 값이 가장 큰 인덱스의 x,y의 값을 계산해서 큰 값이 가로(또는 세로)길이가 된다.
+     */
+    private static int findMaxValue(int[][] sizes) {
+        int sum = 0;
+        int cnt = 0;
 
+        for (int q = 0; q < sizes.length; q++) {
+            if (sizes[q][0] + sizes[q][1] > sum) {
+                sum = sizes[q][0] + sizes[q][1];
+                cnt = q;
+            } else if (sizes[q][0] + sizes[q][1] == sum) {
+                //가로/세로 길이를 더한 값이 동일한 경우, 가로 또는 세로 길이가 더 큰값을 가지고 있는 인덱스를 기준으로 지정한다.
+                if (sizes[q][0] > sizes[cnt][0] && sizes[q][0] > sizes[q][1]) {
+                    sum = sizes[q][0] + sizes[q][1];
+                    cnt = q;
+                } else if (sizes[q][1] > sizes[cnt][1] && sizes[q][1] > sizes[q][0]) {
+                    sum = sizes[q][0] + sizes[q][1];
+                    cnt = q;
+                }
+            }
+        }
+
+        return cnt;
     }
 }
