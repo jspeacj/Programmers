@@ -1,10 +1,7 @@
 package Level1;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class StringSort {
     public static void main(String[] args) {
@@ -34,33 +31,29 @@ public class StringSort {
             "abce"와 "abcd"는 사전순으로 정렬하면 "abcd"가 우선하므로, 답은 ["abcd", "abce", "cdx"] 입니다.
          */
 
-        //String[] strings = {"sun", "bed", "car"};
+
         String[] strings = {"abce", "abcd", "cdx"};
         int n = 1;
 
-        String[] sortedStrings = new String[strings.length];
+        Comparator<String> comp = new Comparator<String> () {
+            @Override
+            public int compare(String s1, String s2) {
+                char c1 = s1.charAt(n);
+                char c2 = s2.charAt(n);
 
-        int index = 0; // 위치를 찾은 인덱스 순서를 저장하기 위한 변수
+                if ((int)c1 > (int)c2) {
+                    return 1;
+                } else if ((int)c1 < (int)c2) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        };
 
-        // 인덱스 n의 문자가 같은 문자열이 여럿일 경우에는, 사전순으로 앞선 문자열이 앞쪽에 위치해야하므로 시작하기에 앞서 미리 오름차순으로 정렬한다.
         Arrays.sort(strings);
+        Arrays.sort(strings, comp);
 
-        for (int i = 0; i < strings.length; i++) {
-            char checkValue = strings[i].charAt(n);
-            index = 0;
-
-            for (int j = i + 1; j < strings.length; j++) {
-                char c = strings[j].charAt(n);
-                if ((int)checkValue > (int)c) index = j;
-            }
-
-            if (index == 0) sortedStrings[i] = strings[i];
-            else {
-                sortedStrings[i] = strings[index];
-                strings[index] = strings[i];
-            }
-        }
-
-        System.out.println(Arrays.toString(sortedStrings));
+        System.out.println(Arrays.toString(strings));
     }
 }
