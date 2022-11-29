@@ -26,6 +26,7 @@ public class Year2016 {
         int a = 5;
         int b = 24;
 
+        /* 방법 1 */
         String answer = "";
         LocalDate date = LocalDate.of(2016, a, b);
 
@@ -56,5 +57,8 @@ public class Year2016 {
         }
 
         System.out.println(answer);
+
+        /* 방법 2 */
+        System.out.println(LocalDate.of(2016, a, b).getDayOfWeek().toString().substring(0, 3));
     }
 }
