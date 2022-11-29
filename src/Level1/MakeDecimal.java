@@ -1,6 +1,6 @@
 package Level1;
 
-public class Decimal {
+public class MakeDecimal {
     public static void main(String[] args) {
         //소수만들기 (Summber/Winter Coding(~2018)
         int[] nums = new int[]{1,2,7,6,4};
