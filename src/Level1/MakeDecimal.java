@@ -19,7 +19,7 @@ public class MakeDecimal {
 
     public static int checkDecimal (int index) {
         //소수인지 체크
-        for (int i = 2; i < index; i++) {
+        for (int i = 2; i <= (int)Math.sqrt(index); i++) {
             if (index % i == 0) {
                 //나누어지는 것이 존재할 경우 소수가 아님
                 return 0;
