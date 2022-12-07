@@ -1,11 +1,5 @@
 package Level1;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class NumberPartner {
     public static void main(String[] args) {
         /*
@@ -48,36 +42,33 @@ public class NumberPartner {
             지문에 설명된 예시와 같습니다.
          */
 
-        String X = "12321";
-        String Y = "42531";
+        String X = "5525";
+        String Y = "1255";
 
-        String answer = "-1";
+        int[] arr1 = new int[10];
+        int[] arr2 = new int[10];
+        StringBuilder sb = new StringBuilder();
 
-        int num = X.length() < Y.length() ? X.length() : Y.length();
-        Integer[] result = new Integer[num - 1];
-        int index = 0;
-        List<String> XList = new ArrayList<>(Arrays.asList(X.split("")));
-        List<String> YList = new ArrayList<>(Arrays.asList(Y.split("")));
-
-        for (String str : XList) {
-            if (YList.contains(str)) {
-                result[index] = Integer.parseInt(str);
-                index++;
-                YList.remove(str);
-            }
+        for (int i = 0; i < X.length(); i++) {
+            arr1[(int)(X.charAt(i) - '0')]++;
         }
 
-        if (index ==) {
-            Arrays.sort(result, Collections.reverseOrder()); // 내림차순 정렬
-            answer = ""; // 초기화
-            for (int n : result) {
-                answer += n;
-            }
+        for (int j = 0; j < Y.length(); j++) {
+            arr2[(int)(Y.charAt(j) - '0')]++;
         }
 
-        //첫번째 숫자가 0이고 이후 0이 더 있을 경우 값을 0으로 변경
-        if (answer.indexOf("0") == 0 && answer.lastIndexOf("0") > 0) answer = "0";
+        for (int i = 9; i >= 0; i--) {
+            int min = Math.min(arr1[i], arr2[i]);
+            for (int index = 0; index < min; index++) sb.append(i);
+        }
 
-        System.out.println(answer);
+        if ("".equals(sb.toString())) sb.append("-1");
+
+        if ("0".equals(sb.substring(0, 1))) {
+            sb.setLength(0); //초기화
+            sb.append("0");
+        }
+
+        System.out.println(sb.toString());
     }
 }
