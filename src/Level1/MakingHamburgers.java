@@ -1,9 +1,5 @@
 package Level1;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 public class MakingHamburgers {
     public static void main(String[] args) {
         /*
@@ -51,14 +47,18 @@ public class MakingHamburgers {
         int[] ingredient = {1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1};
         // 빵, 고기, 야채, 빵, 야채, 빵, 고기, 빵, 야채
 
-        String s = Arrays.toString(ingredient).replaceAll("[^0-9]", ""); //String 문자열로 할당
+        StringBuilder sb = new StringBuilder();
+        for (int i : ingredient) sb.append(i);
         int result = 0; // 상수가 만든 햄버거 개수
 
         while (true) {
-            if (s.contains("1231")) {
-                s = s.replaceFirst("1231", "");
+            int i = sb.indexOf("1231");
+            if (i > -1) {
+                sb.replace(i, i + 4, "");
                 result++;
-            }  else break;
+                continue;
+            }
+            break;
         }
 
         System.out.println(result);
