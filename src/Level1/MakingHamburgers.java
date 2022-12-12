@@ -1,5 +1,7 @@
 package Level1;
 
+import java.util.Stack;
+
 public class MakingHamburgers {
     public static void main(String[] args) {
         /*
@@ -47,6 +49,8 @@ public class MakingHamburgers {
         int[] ingredient = {1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1};
         // 빵, 고기, 야채, 빵, 야채, 빵, 고기, 빵, 야채
 
+        /*
+        첫번째 시도 : 두개 테스트 케이스 시간 초과로 실패
         StringBuilder sb = new StringBuilder();
         for (int i : ingredient) sb.append(i);
         int result = 0; // 상수가 만든 햄버거 개수
@@ -59,6 +63,33 @@ public class MakingHamburgers {
                 continue;
             }
             break;
+        }
+
+        System.out.println(result);
+        */
+
+        /* 두번째 시도 : 스택의 FILO(FirstInputLastOutput)을 이용하여 시도해보기*/
+        int result = 0;
+        Stack<Integer> stack = new Stack<>();
+
+        for (int i = 0; i < ingredient.length; i++) {
+            if (stack.size() >= 3) {
+                if (ingredient[i] == 1) { //넣을 값이 1(빵)일 경우
+                    if (stack.peek() == 3) { //현재 스택에 담겨져 있는 마지막 값이 고기일 경우
+                        if (stack.get(stack.size() - 2) == 2) { // 스택의 마지막 두번째 인덱스에 담겨져 있는 값이 야채일 경우
+                            if (stack.get(stack.size() - 3) == 1) { // 스택의 마지막 세번째 인덱스에 담겨져 있는 값이 빵일 경우
+                                result++;
+                                stack.pop();
+                                stack.pop();
+                                stack.pop();
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+
+            stack.push(ingredient[i]); // 스택 안에 내용물이 햄버거 조합 개수보다 적거나, 조합에 맞지 않을 경우 해당 재료를 쌓는다.
         }
 
         System.out.println(result);
