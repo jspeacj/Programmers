@@ -25,6 +25,7 @@ public class ExpressionOfNumbers {
           문제의 예시와 같습니다.
          */
 
+
         /* TC 1 */
         int n = 15;
 
@@ -43,7 +44,7 @@ public class ExpressionOfNumbers {
             }
         }
 
-        /* Case 2 : 홀수인 약수의 개수가 정답 (이해X) */
+        /* Case 2 : 홀수인 약수의 개수가 정답 (ex. 15의 약수 : 1, 3, 5, 15 : 홀수의 개수 4개) */
         /*
         int result = 0;
         int d = 1;
