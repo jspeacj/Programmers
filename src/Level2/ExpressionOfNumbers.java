@@ -25,31 +25,56 @@ public class ExpressionOfNumbers {
           문제의 예시와 같습니다.
          */
 
+        /*
+        * 1 => 1 : 1
+        * 2 => 2 : 1
+        * 3 => 1 + 2 , 3 : 2
+        * 4 => 4 : 1
+        * 5 => 2 + 3, 5 : 2
+        * 6 => 6 : 1
+        * 7 => 3 + 4, 7 : 2
+        * 8 => 8 : 1
+        * 9 => 4 + 5, 9 : 2
+        * 10 => 1 + 2 + 3 + 4, 10 : 2
+        * 11 => 5 + 6, 11 : 2
+        * 12 => 3 + 4 + 5, 12 : 2
+        * 13 => 6 + 7, 13 : 2
+        * 14 => 2 + 3 + 4 + 5, 14 : 2,
+        * 15 => 1 + 2 + 3 + 4 + 5, 4 + 5 + 6, 7 + 8, 15 : 4
+        * 16 => 16 : 1
+        * */
+
         /* TC 1 */
         int n = 15;
 
+        /* Case 1 : 문제 내용 그대로 처음부터 하나씩 순서대로 더하면서 계산, 더한 값이 주어진 값보다 클 경우 다음 인덱스로 넘어가도록 알고리즘 구현 */
         int result = 0;
-        int sum = 0;
 
-        for (int i = 1; i <= 15; i++) {
-            System.out.println("i : " + i);
-            sum += i;
+        for (int i = 1; i <= n; i++) {
+            int sum = 0;
+            for (int j = i; j <= n; j++) {
+                sum += j;
 
-            if (sum > 15) {
-                sum = 0;
-                i -= 1;
+                if (sum >= n) {
+                    if (sum == n) result++;
+                    break;
+                }
             }
-
-            if (sum == 15) {
-                System.out.println(i + "일 때 sum = 15");
-                result++;
-                sum = 0;
-            }
-
-            System.out.println("sum = " + sum);
-            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         }
 
+        /* Case 2 : 홀수인 약수의 개수가 정답 (이해X) */
+        /*
+        int result = 0;
+        int d = 1;
+
+        while (true) {
+            if (n <= 0) break;
+
+            if (n % d == 0) result++;
+            n -= d;
+            d++;
+        }
+        */
         System.out.println(result);
     }
 }
