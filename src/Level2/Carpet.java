@@ -32,60 +32,51 @@ public class Carpet {
         //int brown = 8;
         //int yellow = 1;
 
-        /*
-        *       o o o o (yellow : 2)
-        *       o x x o
-        *       o o o o
-        *
-        *      o o o o o (yellow : 3)
-        *      o x x x o
-        *      o o o o o
-        *
-        *      o o o o        o o o o o o (yellow : 4)
-        *      o x x o        o x x x x o
-        *      o x x o    OR  o o o o o o
-        *      o o o o
-        *
-        *     o o o o o      o o o o o o o o o o o
-        *     o x x x o      o x x x x x x x x x o (yellow : 9)
-        *     o x x x o   OR o o o o o o o o o o o
-        *     o x x x o
-        *     o o o o o
-        *
-        *
-        *
-        *    x x x x x x
-        *    x x x x x x
-        *    x x x x x x
-        *    x x x x
-        * */
-
         /* TC 3 */
         int brown = 24;
         int yellow = 24;
 
-       /*
-        규칙 : 가로 * 세로 = brown + yellow
-        brown     yellow    return
-          10         2      [4, 3]
-          12         3      [5, 3]
-          12(or 14)  4      [4, 4](or [6, 3])
-
-          정사각형이 되는 기준 : 1, 4, 9 .. 제곱근일 경우
-          세로의 길이 : (정수형)yellow의 제곱근 + 2
-       */
-
+        /* Case 1 : 일부 케이스 에러로 인해 실패
         int[] answer = new int[2];
 
         if (Math.sqrt(yellow) == (int)Math.sqrt(yellow)) {
             answer[1] = (int)Math.sqrt(yellow) + 2; // 세로의 길이 : (정수형)yellow의 제곱근 + 2
             answer[0] = (brown + yellow) / answer[1]; // 가로 = (brown + yellow) / 세로 길이//
         } else {
-        answer[1] = 3; // 세로의 길이 : (정수형)yellow의 제곱근 + 2
-        answer[0] = (brown + yellow) / answer[1]; // 가로 = (brown + yellow) / 세로 길이//
+            answer[1] = yellow + 2; // 세로의 길이 : (정수형)yellow의 제곱근 + 2
+            answer[0] = (brown + yellow) / answer[1]; // 가로 = (brown + yellow) / 세로 길이//
         }
 
         System.out.println(Arrays.toString(answer));
+        */
 
+        /* Case 2 : 규칙 두가지를 찾아서, 해당 두 규칙을 조합하여 구한 세로의 식을 이용하여 세로를 구한 뒤, 가로도 구하는 방식
+        규칙 (1) : 가로 * 세로 = brown + yellow
+            (2) : (가로-2)(세로-2) = yellow
+
+            규칙 (1), (2)번을 서로 조합하여 아래와 같이 식을 계산
+            ① yellow = 가로 * 세로 - 2가로 - 2세로 + 4 = 가로 * 세로 - brown
+            ② brown = 2가로 + 2세로 + 4
+            ③ 가로 + 세로 = (brown / 2) + 2
+            ④ 가로 = (brown / 2) + 2 - 세로
+            ⑤ 가로 = (brown + yellow) / 세로 = (brown / 2) + 2 - 세로
+            ⑥ (brown + yellow) / 세로 = (brown / 2) + 2 - 세로
+            ⑦ (brown + yellow) / 세로 + 세로 = (brown / 2) + 2 => 같지 않을 경우 같을 때까지 세로를 증가시키면 세로 값을 찾을 수 있다.
+       */
+
+        int[] result = new int[2];
+        int x = 3, y = 3; // 제한 사항에서 주어진 가로와 세로의 최소 길이 선언
+
+        while (true) {
+            //정수형으로 처리를 할 경우, 소수점을 제외하고 처리가 되어 부적절하게 맞는 경우가 존재하여 올림 함수 이용하여 계산 처리
+            if (Math.ceil((double)(brown + yellow) / y) + y != (brown / 2) + 2) y++;
+            else break;
+        }
+
+        x = (brown + yellow) / y;
+
+        result[0] = x;
+        result[1] = y;
+        System.out.println(Arrays.toString(result));
     }
 }
