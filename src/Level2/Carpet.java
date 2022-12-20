@@ -65,7 +65,7 @@ public class Carpet {
        */
 
         int[] result = new int[2];
-        int y = 1; // 제한 사항에서 주어진 가로와 세로의 최소 길이 선언
+        int y = 1; // 제한 사항에서 주어진 세로의 최소 길이 선언
 
         while (true) {
             //정수형으로 처리를 할 경우, 소수점을 제외하고 처리가 되어 부적절하게 맞는 경우가 존재하여 올림 함수 이용하여 계산 처리
@@ -73,9 +73,7 @@ public class Carpet {
             else break;
         }
 
-        int x = (brown + yellow) / y;
-
-        result[0] = x;
+        result[0] = (brown + yellow) / y;
         result[1] = y;
         System.out.println(Arrays.toString(result));
     }
