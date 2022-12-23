@@ -5,6 +5,7 @@ import java.util.*;
 public class Level2_test2 {
     public static void main(String[] args) {
         /*
+            혼자 놀기의 달인
             문제 설명
             혼자서도 잘 노는 범희는 어느 날 방구석에 있는 숫자 카드 더미를 보더니 혼자 할 수 있는 재미있는 게임을 생각해냈습니다.
 
