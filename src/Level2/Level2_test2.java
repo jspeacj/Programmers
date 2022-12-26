@@ -44,38 +44,43 @@ public class Level2_test2 {
             따라서 3번 상자를 고르지 않았을 때, 두 번의 시행에서 3과 4를 기록하며 최고 점수 12를 얻을 수 있습니다.
          */
 
-        int[] cards = {8,6,3,7,2,5,1,4};
-        int max = -9999;
+        /* TC 1 */
+        //int[] cards = {8,6,3,7,2,5,1,4};
+
+        /* TC 2 */
+        //int[] cards = {2, 3, 4, 5, 6, 1};
+
+        /* TC 3 */
+        int[] cards = {6, 1, 4, 3, 7, 2, 5};
+
+        int[] openBoxed = new int[cards.length];
+        int cnt = 0;
         int index = 0;
-        List<Integer> list = new ArrayList<>();
+        PriorityQueue<Integer> prQueue = new PriorityQueue<>(Collections.reverseOrder());
 
-        while (true) {
-            int num = cards[index] - 1;
-            int sum = 1;
-            list.clear();
-            for (int q : cards) list.add(q);
-            int size = list.size();
+        for (int i = 0; i < cards.length; i++) {
+            if (openBoxed[i] == 1) continue;
+            else {
+                cnt = 0;
+                index = cards[i] - 1;
 
-            while (true) {
-
-                int cnt = 0;
-                int temp = list.get(num);
-                if (temp != 0) {
-                    list.set(num, 0);
-                    num = temp;
-                    cnt++;
-                    size--;
-                    continue;
+                while (true) {
+                    if (openBoxed[index] == 1) break;
+                    else {
+                        cnt++;
+                        openBoxed[index] = 1;
+                        index = cards[index] - 1;
+                    }
                 }
 
-                if (size <= 0) break;
-                else sum *= cnt;
+                if (cnt ==  cards.length) {
+                    System.out.println("0종료"); //정답에서는 return 0 으로 수정
+                    break;
+                } else prQueue.add(cnt);
             }
-
-            if (sum > max) max = sum;
-
-            if (index < cards.length) index++;
-            else break;
         }
+
+        System.out.println(prQueue.poll() * prQueue.poll());
+
     }
 }
