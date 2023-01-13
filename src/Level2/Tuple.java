@@ -81,13 +81,16 @@ public class Tuple {
         *
         * */
         /* TC 1 */
-        //String s = "{{2},{2,1},{2,1,3},{2,1,3,4}}";
+        String s = "{{2},{2,1},{2,1,3},{2,1,3,4}}";
 
         /* TC 2 */
         //String s = "{{1,2,3},{2,1},{1,2,4,3},{2}}";
 
         /* TC 3 */
-        String s = "{{20,111},{111}}";
+        //String s = "{{20,111},{111}}";
+
+        /* TC 4 */
+        //String s = "{{123}}";
 
         /* TC 5 */
         //String s = "{{4,2,3},{3},{2,3,4,1},{2,3}}";
@@ -101,22 +104,26 @@ public class Tuple {
         s = s.replace("}", "");
         String[] strArray = s.split(" ");
 
-
         Arrays.sort(strArray, new CustomComparator());
 
-        System.out.println(Arrays.toString(strArray));
-        for (String str : strArray) {
-            char[] chars = str.toCharArray();
+       for (String str : strArray) {
+           String[] split = str.split(",");
 
-            for (char c : chars) {
-                System.out.println(c);
-                if (c == ',') continue;
-
-                set.add(c - 48);
+           for (String splitStr : split) {
+                set.add(Integer.parseInt(splitStr));
             }
         }
 
-        System.out.println(set);
+        int[] result = new int[set.size()];
+        Iterator<Integer> iterator = set.iterator();
+        int index = 0;
+
+        while (iterator.hasNext()) {
+            result[index] = iterator.next();
+            index++;
+        }
+
+        System.out.println(Arrays.toString(result));
     }
 }
     class CustomComparator implements Comparator<String> {
