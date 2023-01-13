@@ -115,10 +115,7 @@ public class Tuple {
         Iterator<Integer> iterator = set.iterator();
         int index = 0;
 
-        while (iterator.hasNext()) {
-            result[index] = iterator.next();
-            index++;
-        }
+        while (iterator.hasNext()) result[index++] = iterator.next();
 
         System.out.println(Arrays.toString(result));
     }
