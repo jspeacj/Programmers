@@ -99,10 +99,7 @@ public class Tuple {
 
         s = s.substring(1, s.length() - 1);
 
-        s = s.replace("{", "");
-        s = s.replace("},", " ");
-        s = s.replace("}", "");
-        String[] strArray = s.split(" ");
+        String[] strArray = s.replace("{", "").replace("},", " ").replace("}", "").split(" ");
 
         Arrays.sort(strArray, new CustomComparator());
 
