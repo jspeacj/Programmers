@@ -1,5 +1,11 @@
 package Level2;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 public class FunctionDevelopment {
     public static void main(String[] args) {
         /*
@@ -40,5 +46,48 @@ public class FunctionDevelopment {
 
             따라서 5일째에 1개의 기능, 10일째에 3개의 기능, 20일째에 2개의 기능이 배포됩니다.
         * */
+
+        /* TC 1 : return : [2,1] */
+        int[] progresses = {93, 30, 55};
+        int[] speeds = {1, 30, 5};
+
+        /* TC 2 : return : [1,,3, 2] */
+        //int[] progresses = {95, 90, 99, 99, 80, 99};
+        //int[] speeds = {1, 1, 1, 1, 1, 1};
+
+        int cnt = 0;
+        List<Integer> progressesList = new ArrayList<>();
+        List<Integer> speedsList = new ArrayList<>();
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < progresses.length; i++) {
+            progressesList.add(progresses[i]);
+            speedsList.add(speeds[i]);
+        }
+
+        while (progressesList.size() > 0) {
+            System.out.println("시작 : " + progressesList);
+            if (progressesList.get(0) >= 100) {
+                while (true) {
+                    if (progressesList.size() <= 0) break;
+
+                    if (progressesList.get(0) >= 100) {
+                        progressesList.remove(0);
+                        speedsList.remove(0);
+                        cnt++;
+                    } else {
+                        result.add(cnt);
+                        cnt = 0;
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 0; i < progressesList.size(); i++) progressesList.set(i, progressesList.get(i) + speedsList.get(i));
+            System.out.println("종료 : " + progressesList + ",,,,,,,,,," + result);
+        }
+
+        System.out.println(result);
+
     }
 }
