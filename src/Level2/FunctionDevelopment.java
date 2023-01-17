@@ -1,10 +1,7 @@
 package Level2;
 
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class FunctionDevelopment {
     public static void main(String[] args) {
@@ -48,17 +45,17 @@ public class FunctionDevelopment {
         * */
 
         /* TC 1 : return : [2,1] */
-        int[] progresses = {93, 30, 55};
-        int[] speeds = {1, 30, 5};
+        //int[] progresses = {93, 30, 55};
+        //int[] speeds = {1, 30, 5};
 
         /* TC 2 : return : [1,,3, 2] */
-        //int[] progresses = {95, 90, 99, 99, 80, 99};
-        //int[] speeds = {1, 1, 1, 1, 1, 1};
+        int[] progresses = {95, 90, 99, 99, 80, 99};
+        int[] speeds = {1, 1, 1, 1, 1, 1};
 
         int cnt = 0;
         List<Integer> progressesList = new ArrayList<>();
         List<Integer> speedsList = new ArrayList<>();
-        List<Integer> result = new ArrayList<>();
+        List<Integer> resultList = new ArrayList<>();
 
         for (int i = 0; i < progresses.length; i++) {
             progressesList.add(progresses[i]);
@@ -66,17 +63,23 @@ public class FunctionDevelopment {
         }
 
         while (progressesList.size() > 0) {
-            System.out.println("시작 : " + progressesList);
             if (progressesList.get(0) >= 100) {
                 while (true) {
-                    if (progressesList.size() <= 0) break;
+                    if (progressesList.size() <= 0) {
+                        if (cnt != 0) {
+                            resultList.add(cnt);
+                            cnt = 0;
+                        }
+
+                        break;
+                    }
 
                     if (progressesList.get(0) >= 100) {
                         progressesList.remove(0);
                         speedsList.remove(0);
                         cnt++;
                     } else {
-                        result.add(cnt);
+                        resultList.add(cnt);
                         cnt = 0;
                         break;
                     }
@@ -84,10 +87,13 @@ public class FunctionDevelopment {
             }
 
             for (int i = 0; i < progressesList.size(); i++) progressesList.set(i, progressesList.get(i) + speedsList.get(i));
-            System.out.println("종료 : " + progressesList + ",,,,,,,,,," + result);
         }
 
-        System.out.println(result);
+        int[] result = new int[resultList.size()];
+
+        for (int index = 0; index < resultList.size(); index++) result[index] = resultList.get(index);
+
+        System.out.println(Arrays.toString(result));
 
     }
 }
