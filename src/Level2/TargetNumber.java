@@ -42,5 +42,33 @@ public class TargetNumber {
            2. 즉 정렬을 하면 안되니깐 모든 경우의 수를 다해야한다..? 효율성이 괜찮을지 검토해야함.
            3.
         * */
+
+        /* TC 1 return : 5 */
+        //int [] numbers = {1, 1, 1, 1, 1};
+        //int target = 3;
+
+        /* TC 2 return : 2 */
+        int [] numbers = {4, 1, 2, 1};
+        int target = 4;
+
+        System.out.println(targetSearch(numbers, 0, 0, target));
+    }
+
+    public static int targetSearch(int[] numbers, int index, int total, int target) {
+        int num = 0;
+        int plusTotal = total + numbers[index];
+        int minusTotal = total - numbers[index];
+
+        if (index + 1 < numbers.length) { // 다음 인덱스가 존재할 경우
+            index++;
+
+            num += targetSearch(numbers, index, plusTotal, target);
+            num += targetSearch(numbers, index, minusTotal, target);
+        } else { // 마지막 값일 경우
+            if (plusTotal == target) num++;
+            if (minusTotal == target) num++;
+        }
+
+        return num;
     }
 }
