@@ -47,32 +47,32 @@ public class Fatigue {
 
         /* TC 1 result : 3 */
         int k = 80;
-        int[][] dungeons = {{80,20}, {60,40}, {30,10}, {50, 40}};
+        int[][] dungeons = {{80,20}, {50,40}, {30,10}};
 
-        /* 완전탐색으로 다풀어야함... */
-        int sum = 0;
-        int answer = 0;
+        /* 완전 탐색으로 풀어야한다 : DFS(깊이 우선 탐색 : Death-First-Search) , BFS(너비 우선 탐색 : Bread-First-Search) 이용하기 => 재귀함수 이용하기*/
+        System.out.println(bfs(dungeons, k, 0, 0));
 
-        for (int i = 0; i < dungeons.length; i++) sum += dungeons[i][1];
+        /*for (int i = 0; i < dungeons.length; i++) {
+            if (k < dungeons[i][0]) continue; //처음 던전부터 최소 필요 피로도가 현재 피로도보다 높을 경우 최대 던전수에 부적합하기 떄문에 패스
+            int fatigue = k - dungeons[i][1];
+            int num = 1;
+            for (int j = 0; j < dungeons.length; j++) {
+                if (i == j) continue; //동일한 던전이므로 패스
 
-        // 소모 피로도의 총합보다 현재 피로도가 높을 경우 모든 던전을 돌 수 있으므로 dungeons의 길이를 반환한다.(하루에 한번씩만 돌 수 있기 때문)
-        if (k > sum) System.out.println(dungeons.length);
-        else {
-            Arrays.sort(dungeons, new Comparator<int[]>(){
-                @Override
-                public int compare(int[] o1, int[] o2) {
-                    return (o1[1] + o1[0]) - (o2[1] + o2[0]);
+                //최소 필요 피로도가 더 높으므로 던전을 해당 경우의 수로는 던전을 더 못도므로 종료
+                if (fatigue < dungeons[j][0]) continue;
+                else {
+                    fatigue -= dungeons[j][1];
+                    num++;
                 }
-            });
-
-            for (int index = 0; index < dungeons.length; index++) {
-                if (k < dungeons[index][0]) continue;
-
-                k -= dungeons[index][1];
-                answer++;
             }
-        }
 
-        System.out.println(answer);
+            if (num > answer) answer = num;
+            if (num == dungeons.length) break; // 던전을 모두 돌았을 경우 이미 최대 던전 수 이므로 종료
+        }*/
+    }
+
+    public static int bfs (int[][] dungeons, int k, int index, int sum) {
+        return 1;
     }
 }
