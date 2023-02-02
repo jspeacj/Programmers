@@ -1,7 +1,6 @@
 package Level2;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class Fatigue {
     public static void main(String[] args) {
@@ -45,34 +44,43 @@ public class Fatigue {
             따라서 이 경우 세 던전을 모두 탐험할 수 있으며, 유저가 탐험할 수 있는 최대 던전 수는 3입니다.
          */
 
-        /* TC 1 result : 3 */
-        int k = 80;
-        int[][] dungeons = {{80,20}, {50,40}, {30,10}};
+        /*
+         *   너비 우선 탐색(BFS : Bread-Frist-Search) 알고리즘 구현
+         *  1. 함수 호출 시, index(배열의 위치) 및 count(던전을 모두 돌았을 경우 종료하기 위함) 0으로 파라미터 전달 (=> 반복문으로 수행하도록 수정)
+         *  2. 인덱스를 기준으로 첫번쨰 던전을 지정한다. (count++) => 현재 피로도(k)가 던전 최소 피로도보다 작을 경우 종료
+         *  3. 인덱스를 제외한 나머지 던전들을 두번쨰 던전으로 지정한다. (count++) => 현재 피로도(k)가 던전 최소 피로도보다 작을 경우 종료
+         *  4. 던전 회수(count)가 최대 던전 수와 같을 경우 종료, 작을 경우 다음 던전을 돌기 위해 함수를 재호출한다.
+         *     (이떄, 이미 탐험한 던전과 탐험하지 않은 던전을 확인 할 수 있는 방법이 필요하다.)
+         * */
 
         /* 완전 탐색으로 풀어야한다 : DFS(깊이 우선 탐색 : Death-First-Search) , BFS(너비 우선 탐색 : Bread-First-Search) 이용하기 => 재귀함수 이용하기*/
-        System.out.println(bfs(dungeons, k, 0, 0));
+        /* TC 1 result : 3 */
+        //int k = 80;
+        //int[][] dungeons = {{60,50}, {80,20}, {50,40}, {30,10}};
 
-        /*for (int i = 0; i < dungeons.length; i++) {
-            if (k < dungeons[i][0]) continue; //처음 던전부터 최소 필요 피로도가 현재 피로도보다 높을 경우 최대 던전수에 부적합하기 떄문에 패스
-            int fatigue = k - dungeons[i][1];
-            int num = 1;
-            for (int j = 0; j < dungeons.length; j++) {
-                if (i == j) continue; //동일한 던전이므로 패스
+        /* TC 2 result : 4 */
+        int k = 40;
+        int[][] dungeons = {{40, 20}, {10, 10}, {10, 10}, {10, 10}, {10, 10}};
 
-                //최소 필요 피로도가 더 높으므로 던전을 해당 경우의 수로는 던전을 더 못도므로 종료
-                if (fatigue < dungeons[j][0]) continue;
-                else {
-                    fatigue -= dungeons[j][1];
-                    num++;
-                }
-            }
+        int sum = 0;
+        int answer = 0;
 
-            if (num > answer) answer = num;
-            if (num == dungeons.length) break; // 던전을 모두 돌았을 경우 이미 최대 던전 수 이므로 종료
-        }*/
+        for (int i = 0; i < dungeons.length; i++) sum += dungeons[i][1];
+
+        if (k >= sum) System.out.println(dungeons.length);
+        else {
+            /*
+             문제점..
+             1.던전을 이미 돈곳은 모든 경우의 수에서 독립적으로 확인해야하는데 (배열로 하면 주소값이 동일해서 이전 조건에서 지정한게 초기화가 안됨)
+             2.현재피로도(k)도 1번과 동일
+            * */
+            bfs();
+
+            System.out.println(answer);
+        }
     }
 
-    public static int bfs (int[][] dungeons, int k, int index, int sum) {
+    public static int bfs () {
         return 1;
     }
 }
