@@ -1,7 +1,5 @@
 package Level2;
 
-import java.util.Arrays;
-
 public class Fatigue {
     public static void main(String[] args) {
         /*
@@ -44,15 +42,6 @@ public class Fatigue {
             따라서 이 경우 세 던전을 모두 탐험할 수 있으며, 유저가 탐험할 수 있는 최대 던전 수는 3입니다.
          */
 
-        /*
-         *   너비 우선 탐색(BFS : Bread-Frist-Search) 알고리즘 구현
-         *  1. 함수 호출 시, index(배열의 위치) 및 count(던전을 모두 돌았을 경우 종료하기 위함) 0으로 파라미터 전달 (=> 반복문으로 수행하도록 수정)
-         *  2. 인덱스를 기준으로 첫번쨰 던전을 지정한다. (count++) => 현재 피로도(k)가 던전 최소 피로도보다 작을 경우 종료
-         *  3. 인덱스를 제외한 나머지 던전들을 두번쨰 던전으로 지정한다. (count++) => 현재 피로도(k)가 던전 최소 피로도보다 작을 경우 종료
-         *  4. 던전 회수(count)가 최대 던전 수와 같을 경우 종료, 작을 경우 다음 던전을 돌기 위해 함수를 재호출한다.
-         *     (이떄, 이미 탐험한 던전과 탐험하지 않은 던전을 확인 할 수 있는 방법이 필요하다.)
-         * */
-
         /* 완전 탐색으로 풀어야한다 : DFS(깊이 우선 탐색 : Death-First-Search) , BFS(너비 우선 탐색 : Bread-First-Search) 이용하기 => 재귀함수 이용하기*/
         /* TC 1 result : 3 */
         //int k = 80;
@@ -64,23 +53,31 @@ public class Fatigue {
 
         int sum = 0;
         int answer = 0;
+        boolean[] flag = new boolean[dungeons.length];
 
         for (int i = 0; i < dungeons.length; i++) sum += dungeons[i][1];
 
         if (k >= sum) System.out.println(dungeons.length);
-        else {
-            /*
-             문제점..
-             1.던전을 이미 돈곳은 모든 경우의 수에서 독립적으로 확인해야하는데 (배열로 하면 주소값이 동일해서 이전 조건에서 지정한게 초기화가 안됨)
-             2.현재피로도(k)도 1번과 동일
-            * */
-            bfs();
-
-            System.out.println(answer);
-        }
+        else System.out.println(bfs(dungeons, k, flag));
     }
 
-    public static int bfs () {
-        return 1;
+    public static int bfs (int[][] dungeons, int k, boolean[] flag) {
+        int num = 0;
+
+        for (int i = 0; i < dungeons.length; i++) {
+            if(!flag[i] && k >= dungeons[i][0]) {
+                flag[i] = true;
+                num = Math.max(num, bfs(dungeons, k - dungeons[i][1], flag));
+                flag[i] = false;
+            }
+        }
+
+        return Math.max(num, flagCount(flag));
+    }
+
+    public static int flagCount(boolean[] flag) {
+        int count = 0;
+        for (boolean f : flag) if (f) count++;
+        return count;
     }
 }
