@@ -1,7 +1,9 @@
 package Level2;
 
+import java.util.PriorityQueue;
+
 public class MoreSpicy {
-    public static void main() {
+    public static void main(String[] args) {
         /*
             더 맵게
             문제 설명
@@ -34,5 +36,31 @@ public class MoreSpicy {
 
             모든 음식의 스코빌 지수가 7 이상이 되었고 이때 섞은 횟수는 2회입니다.
         * */
+
+        /* TC 1 return : 2 */
+        //int[] scoville = {1, 2, 3, 9, 10, 12};
+        //int K = 7;
+
+        /* TC 2 return : -1 */
+        int[] scoville = {1,1, 2,6};
+        int K = 24;
+
+        int answer = 0;
+        PriorityQueue<Integer> prQueue = new PriorityQueue<>();
+        for (int i : scoville) prQueue.add(i);
+
+        while (true) {
+            if (prQueue.peek() >= K) break;
+
+            if (prQueue.size() == 1) {
+                if (prQueue.peek() < K) answer = -1;
+                break;
+            }
+
+            prQueue.add(prQueue.poll() + prQueue.poll() * 2);
+            answer++;
+        }
+
+        System.out.println(answer);
     }
 }
