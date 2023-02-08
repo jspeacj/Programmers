@@ -122,16 +122,16 @@ public class ParkingFeeCalculation {
          */
 
         /* TC 1 result : [14600, 34400, 5000]*/
-        int[] fees = {180, 5000, 10, 600};
-        String[] records = {"05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"};
+        //int[] fees = {180, 5000, 10, 600};
+        //String[] records = {"05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"};
 
         /* TC 2 result : [0, 591] */
         //int[] fees = {120, 0, 60, 591};
         //String[] records = {"16:00 3961 IN","16:00 0202 IN","18:00 3961 OUT","18:00 0202 OUT","23:58 3961 IN"};
 
         /* TC 3 result : [14841] */
-        //int[] fees = {1, 461, 1, 10};
-        //String[] records = {"00:00 1234 IN"};
+        int[] fees = {1, 461, 1, 10};
+        String[] records = {"00:00 1234 IN"};
 
         Arrays.sort(records, new Comparator<String>() {
             @Override
@@ -143,22 +143,28 @@ public class ParkingFeeCalculation {
         List<Integer> list = new ArrayList<>();
         DateFormat format = new SimpleDateFormat("HH:mm");
         Date inDate = format.parse("01:01");
-        Date outDate;
+        Date outDate = format.parse("01:01");;
         int index = 0;
         boolean flag = true;
         String str = records[0].substring(6, 10);
 
-        for (int i = 0; i < records.length; i++) {
-            if (!str.equals(records[i].substring(6, 10))) {
+        for (int i = 0; i <= records.length; i++) {
+            if (i == records.length || !str.equals(records[i].substring(6, 10))) {
+                long minute = 0;
                 if (flag) {
                     outDate = format.parse("23:59");
-                    long minute = (outDate.getTime() - inDate.getTime()) / (1000 * 60);
-                    minute += list.get(index);
-                    int fee = calculation(fees, minute);
-                    list.set(index, fee);
+                    minute = (outDate.getTime() - inDate.getTime()) / (1000 * 60);
                 }
+
+                minute += list.get(index);
+                int fee = calculation(fees, minute);
+                list.set(index, fee);
+
+                if (i == records.length) break;
+
                 str = records[i].substring(6, 10);
                 index++;
+
             }
 
             if ("IN".equals(records[i].substring(11, 13))) {
@@ -174,14 +180,17 @@ public class ParkingFeeCalculation {
             }
         }
 
-        System.out.println(list);
+        int[] answer = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) answer[i] = list.get(i);
+
+        System.out.println(Arrays.toString(answer));
     }
 
     public static int calculation(int[] fees, long minute) {
         if (minute < fees[0]) {
             return fees[1];
         } else {
-            return fees[1] + ((int)Math.ceil((minute - fees[0]) / fees[2]) * fees[3]);
+            return fees[1] + ((int)Math.ceil((double)(minute - fees[0]) / fees[2]) * fees[3]);
         }
     }
 }
