@@ -1,7 +1,6 @@
 package Level2;
 
 public class EatTheGround {
-    private static int max = -1;
     public static void main(String[] args) {
         /*
             땅따먹기
