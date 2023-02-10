@@ -1,9 +1,9 @@
 package Level2;
 
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class VisitLength {
-    private static int[][] firstVisit = new int[11][11];
     public static void main(String[] args) {
         /*
             방문 길이
@@ -63,10 +63,13 @@ public class VisitLength {
          */
 
         /* TC 1 result : 7 */
-        String dirs = "ULURRDLLU";
+        //String dirs = "ULURRDLLU";
 
         /* TC 2 result : 7 */
         //String dirs = "LULLLLLLU";
+
+        /* TC 3 result : 7 */
+        String dirs = "LURDLURDLURDLURDRULD";
 
         class Location {
             private int x; // x 좌표
@@ -108,84 +111,60 @@ public class VisitLength {
             public int minY() {
                 return -5;
             }
-
         }
 
-
-        //x일떄, y일때 반대로 줘야함 출력하고 확인해보기!
         Location location = new Location(0, 0);
-
+        Set<String> set = new HashSet<>();
         int answer = 0;
         char[] chars = dirs.toCharArray();
 
         for (char c : chars) {
             int nowX = location.getX();
             int nowY = location.getY();
-            System.out.println(c);
             switch (c) {
                 case 'U' :
-                    if (nowY + 1 > location.maxY()) break;
-                    if (validationY(nowY, nowY + 1, nowX)) answer++;
-                    location.setY(nowY + 1);
-                    break;
-
-                case 'D' :
-                    if (nowY - 1 < location.minY()) break;
-                    if (validationY(nowY, nowY - 1, nowX)) answer++;
-                    location.setY(nowY - 1);
-                    break;
-
-                case 'L' :
                     if (nowX - 1 < location.minX()) break;
-                    if (validationX(nowX, nowX - 1, nowY)) answer++;
+                    if (validationX(nowX, nowX - 1, nowY, set)) answer++;
                     location.setX(nowX - 1);
                     break;
 
-                case 'R' :
+                case 'D' :
                     if (nowX + 1 > location.maxX()) break;
-                    if (validationX(nowX, nowX + 1, nowY)) answer++;
+                    if (validationX(nowX, nowX + 1, nowY, set)) answer++;
                     location.setX(nowX + 1);
                     break;
-            }
 
-            for (int i = 0; i < firstVisit.length; i++) {
-                for (int j = 0; j < firstVisit[0].length; j++) {
-                    System.out.print(firstVisit[i][j] + ", ");
-                }
-                System.out.println();
-            }
+                case 'L' :
+                    if (nowY - 1 < location.minY()) break;
+                    if (validationY(nowY, nowY - 1, nowX, set)) answer++;
+                    location.setY(nowY - 1);
+                    break;
 
-            System.out.println(answer);
-            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+
+                case 'R' :
+                    if (nowY + 1 > location.maxY()) break;
+                    if (validationY(nowY, nowY + 1, nowX, set)) answer++;
+                    location.setY(nowY + 1);
+                    break;
+            }
         }
 
         System.out.println(answer);
 
     }
-    public static boolean validationX (int nowX, int nextX, int nowY) {
-        System.out.println("validationX : " + (nowX+5) + ", " + (nextX + 5) + ", " + (nowY + 5));
-        if (firstVisit[nowX + 5][nowY + 5] == 1 && firstVisit[nextX + 5][nowY + 5] == 1) {
-            System.out.println(firstVisit[nowX + 5][nowY + 5] + ", " + firstVisit[nextX + 5][nowY + 5]);
-            System.out.println("##############################################");
-            return false;
-        }
-        else {
-            firstVisit[nowX + 5][nowY + 5] = 1;
-            firstVisit[nextX + 5][nowY + 5] = 1;
-        }
-        return true;
+    public static boolean validationX (int nowX, int nextX, int nowY, Set<String> set) {
+        int beforeSize = set.size();
+        set.add(Integer.toString(nowX) + nowY + nextX + nowY);
+        set.add(Integer.toString(nextX) + nowY + nowX + nowY);
+        int afterSize = set.size();
+        return beforeSize != afterSize ? true : false;
     }
-    public static boolean validationY (int nowY, int nextY, int nowX) {
-        System.out.println("validationY : " + (nowY+5) + ", " + (nextY + 5) + ", " + (nowX + 5));
-        if (firstVisit[nowX + 5][nowY + 5] == 1 && firstVisit[nowX + 5][nextY + 5] == 1) {
-            System.out.println(firstVisit[nowX + 5][nowY + 5] + ", " + firstVisit[nowX + 5][nextY + 5]);
-            System.out.println("##############################################");
-            return false;
-        }
-        else {
-            firstVisit[nowX + 5][nowY + 5] = 1;
-            firstVisit[nowX + 5][nextY + 5] = 1;
-        }
-        return true;
+
+    public static boolean validationY (int nowY, int nextY, int nowX, Set<String> set) {
+        int beforeSize = set.size();
+        set.add(Integer.toString(nowX) + nowY + nowX + nextY);
+        set.add(Integer.toString(nowX) + nextY + nowX + nowY);
+        int afterSize = set.size();
+        return beforeSize != afterSize ? true : false;
     }
 }
