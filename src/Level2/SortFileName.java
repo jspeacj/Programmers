@@ -1,5 +1,7 @@
 package Level2;
 
+import java.util.Arrays;
+
 public class SortFileName {
     public static void main(String[] args) {
         /*
@@ -62,18 +64,62 @@ public class SortFileName {
          */
 
         /* TC 1 answer : "img1.png", "IMG01.GIF", "img02.png", "img2.JPG", "img10.png", "img12.png" */
-        String[] files = {"img12.png", "img10.png", "img02.png", "img1.png", "IMG01.GIF", "img2.JPG"};
+        //String[] files = {"img12.png", "img10.png", "img02.png", "img1.png", "IMG01.GIF", "img2.JPG"};
 
         /* TC 2 answer : "A-10 Thunderbolt II", "B-50 Superfortress", "F-5 Freedom Fighter", "F-14 Tomcat" */
-        //String[] files = {"F-5 Freedom Fighter", "B-50 Superfortress", "A-10 Thunderbolt II", "F-14 Tomcat"};
+        String[] files = {"F-5 Freedom Fighter", "B-50 Superfortress", "A-10 Thunderbolt II", "F-14 Tomcat"};
 
-        // 버블정렬 이용하여 문제를 풀이해보기!
+        StringBuilder temp = new StringBuilder();
+
         for (int i = 0; i < files.length - 1; i++) {
-            for (int j = i; j <files.length - 1; j++) {
+            for (int j = 0; j <files.length - (i + 1); j++) {
+                temp.setLength(0);
                 String file1 = files[j];
+                String[] file1Array = filesSplit(file1.toCharArray());
                 String file2 = files[j + 1];
+                String[] file2Array = filesSplit(file2.toCharArray());
 
+                int check = checkHead(file1Array[0], file2Array[0]);
+                if (check == 0) continue;
+                else if (check == -1 && checkNumber(file1Array[1], file2Array[1])) continue;
+
+                temp.append(file1);
+                files[j] = files[j + 1];
+                files[j + 1] = temp.toString();
             }
         }
+
+        System.out.println(Arrays.toString(files));
+    }
+
+    public static String[] filesSplit (char[] chars) {
+        String[] str = {"", ""};
+        int i = 0;
+        for (char c : chars) {
+            if ((int)c < 48 || (int)c > 57) {
+                if (i == 1) break;
+            } else {
+                if (i == 0) i++;
+                else if (str[i].length() >= 5) break;
+            }
+
+            str[i] += c + "";
+        }
+        return str;
+    }
+
+    public static int checkHead (String str1, String str2) {
+        if (str1.toUpperCase().equals(str2.toUpperCase())) return -1;
+        String[] str = {str1.toUpperCase(), str2.toUpperCase()};
+        String before = str[0];
+        Arrays.sort(str);
+        return before.equals(str[0]) ? 0 : 1;
+    }
+
+    public static boolean checkNumber (String str1, String str2) {
+        int[] array = {Integer.parseInt(str1), Integer.parseInt(str2)};
+        int before = array[0];
+        Arrays.sort(array);
+        return before <= array[0] ? true : false;
     }
 }
