@@ -27,8 +27,7 @@ public class VowelDictionary {
 
             입출력 예 #2
             "AAAE"는 "A", "AA", "AAA", "AAAA", "AAAAA", "AAAAE", "AAAAI", "AAAAO", "AAAAU"의 다음인 10번째 단어입니다.
-AUUUU
-B
+
             입출력 예 #3
             "I"는 1563번째 단어입니다.
 
@@ -41,11 +40,23 @@ B
         * A AA AAA AAAA AAAAA AAAAE AAAAI AAAAO AAAAU
         * AAAIA => A AA AAA AAAA AAAAA AAAAE AAAAI AAAAO AAAAU
         *                   AAAE AAAEA AAAEE AAAEI AAAEO AAAEU
-        *                   AAAI AAAIA AAAIE AAAII AAAIO AAAAIU
+        *                   AAAI AAAIA AAAIE AAAII AAAIO AAAIU
+          {0, 0, 0, 0, 0}
+          5 : 0 + 1 = 1
+          4 : 5 + 1 = 6
+          3 : 5 * 5 + 1 = 25 + 1 = 26
+          2 : (7 * 5) * 5 + 1 = 35 * 5 + 1 = 155 + 1 = 156
+          1 : (8 * 5) * 5 + 1 = 40 * 5 + 1 = 201
+          * int[] nums = {781, 156, 31, 6, 1}; // 각 자리수에 대한 단어 개수
+          AAAAA = 1
+          AAAA = AAAAA * 5 + 1 = 1 * 5 + 1 = 6
+          AAA = AAAA * 5 + 1 = 6 * 5 + 1 = 31
+          AA = AAA * 5 + 1 = 31 * 5 + 1 = 156
+          A = AA * 5 + 1 = 156 * 5 + 1 = 781
         * */
 
         /* TC 1 result : 6 */
-        String word = "AAAAE";
+        //String word = "AAAAE";
 
         /* TC 2 result : 10 */
         //String word = "AAAE";
@@ -54,54 +65,23 @@ B
         //String word = "I";
 
         /* TC 4 result : 1189 */
-        //String word = "EIO";
+        String word = "EIO";
 
         /*
-        재귀함수 이용하여 문제 풀이하기! 끝에서부터 문자하나의 switch문을 적용해서 시도..??
-        (시도한 문자는 제거하고, 재귀함수로 재호출하는 방식으로 문제 풀이해보기!)
-         */
-        StringBuilder sb = new StringBuilder();
-        sb.append(word);
-        System.out.println(sb);
-        sb.delete(sb.length()-1,sb.length());
-        System.out.println(sb);
-        System.out.println(dictionary(sb));
-    }
-
-    public static int dictionary (StringBuilder word){
+            AAAAA = 1
+            AAAA = AAAAA * 5 + 1 = 1 * 5 + 1 = 6
+            AAA = AAAA * 5 + 1 = 6 * 5 + 1 = 31
+            AA = AAA * 5 + 1 = 31 * 5 + 1 = 156
+            A = AA * 5 + 1 = 156 * 5 + 1 = 781
+        */
+        int[] nums = {781, 156, 31, 6, 1}; // 각 자리수에 대한 단어 개수
         int answer = 0;
-            int length = 5 - word.length();
-            String lastWord = word.substring(word.length()-1);
-            if (length > 0) {
-                switch (lastWord) {
-                    case "A":
-                        answer += 0 * Math.pow(5, length);
-                        break;
 
-                    case "E":
-                        answer += 1 * Math.pow(5, length);
-                        break;
+        for (int index = 0; index < word.length(); index++) {
+            int num = "AEIOU".indexOf(word.charAt(index));
+            answer += num * nums[index] + 1;
+        }
 
-                    case "I":
-                        answer += 2 * Math.pow(5, length);
-                        break;
-
-                    case "O":
-                        answer += 3 * Math.pow(5, length);
-                        break;
-
-                    case "U":
-                        answer += 4 * Math.pow(5, length);
-                        break;
-                }
-            }
-
-            if (word.length() > 1) {
-                word.delete(word.length()-1, word.length());
-                System.out.println(word);
-                answer += dictionary(word);
-                System.out.println("추가 : " + answer);
-            }
-        return answer;
+        System.out.println(answer);
     }
 }
