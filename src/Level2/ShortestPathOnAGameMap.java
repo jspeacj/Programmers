@@ -1,5 +1,8 @@
 package Level2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ShortestPathOnAGameMap {
     public static void main(String[] args) {
         /*
@@ -67,10 +70,20 @@ public class ShortestPathOnAGameMap {
 
         for (int i = 0; i < maps.length; i++) {
             for (int j = 0; j < maps[0].length; j++) {
-                if (maps[i][j] == 1) System.out.print("O ");
-                else System.out.print("X ");
+                if (maps[i][j] == 1) System.out.print(" O ");
+                else System.out.print(" X ");
             }
             System.out.println();
         }
+
+        List<Integer> list = new ArrayList<>();
+        int positionRow = maps.length - 1;
+        int positionCol = maps[0].length - 1;
+        System.out.println(maps[positionRow][positionCol]);
+        dfs(maps, positionRow, positionCol, 0, list);
+
+    }
+
+    private static void dfs(int[][] maps, int positionRow, int positionCol, int count, List<Integer> prQueue) {
     }
 }
