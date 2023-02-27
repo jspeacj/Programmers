@@ -1,7 +1,7 @@
 package Level2;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ShortestPathOnAGameMap {
     public static void main(String[] args) {
@@ -68,6 +68,7 @@ public class ShortestPathOnAGameMap {
         /* TC 2 answer : -1 */
         //int[][] maps = {{1,0,1,1,1},{1,0,1,0,1},{1,0,1,1,1},{1,1,1,0,0},{0,0,0,0,1}};
 
+        /* 그림 맵 보고 싶을 경우 주석 풀고 실행해보기!
         for (int i = 0; i < maps.length; i++) {
             for (int j = 0; j < maps[0].length; j++) {
                 if (maps[i][j] == 1) System.out.print(" O ");
@@ -75,15 +76,59 @@ public class ShortestPathOnAGameMap {
             }
             System.out.println();
         }
+        */
 
-        List<Integer> list = new ArrayList<>();
-        int positionRow = maps.length - 1;
-        int positionCol = maps[0].length - 1;
-        System.out.println(maps[positionRow][positionCol]);
-        dfs(maps, positionRow, positionCol, 0, list);
+        /* 너비우선탐색(BFS)은 큐에 정점을 넣으면서 진행을 하는것이 일반적이다. */
+        Queue<Position> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[maps.length][maps[0].length];
+        int[][] movePosition = {{-1,0}, {1, 0}, {0, -1}, {0, 1}};
+        queue.add(new Position(0,0, 1));
 
+        while (!queue.isEmpty()) {
+            Position position = queue.poll();
+
+            if (position.getX() == maps.length -1 && position.getY() == maps[0].length - 1) System.out.println(position.getM());
+
+            for (int i = 0; i < movePosition.length; i++) {
+                int sumX = position.getX() + movePosition[i][0];
+                int sumY = position.getY() + movePosition[i][1];
+
+                if (sumX < 0 || sumY < 0 || sumX > maps.length - 1 || sumY > maps[0].length - 1) continue;
+
+                if (maps[sumX][sumY] == 1 && !visited[sumX][sumY]) {
+                    visited[sumX][sumY] = true;
+                    queue.add(new Position(sumX, sumY, position.getM() + 1));
+                }
+            }
+        }
+        System.out.println(-1);
     }
 
-    private static void dfs(int[][] maps, int positionRow, int positionCol, int count, List<Integer> prQueue) {
+    static class Position {
+        private int x;
+        private int y;
+        private int m;
+
+        public Position(int x, int y, int m) {
+            this.x = x;
+            this.y = y;
+            this.m = m;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getM() {
+            return m;
+        }
     }
 }
