@@ -66,6 +66,11 @@ public class LessDifferentTwoBit {
         for (int i = 0; i < numbers.length; i++) {
             sb.setLength(0);
             sb.append(Long.toBinaryString(numbers[i]));
+            if (sb.length() <= 1) { // numbers = {0} , {1}일경우 다음 값이 없으므로 로직 다르게 흐르도록 조건문 추가
+                answer[i] = numbers[i] + 1;
+                continue;
+            }
+
             boolean check1 = "0".equals(sb.substring(sb.length()-1, sb.length()));
             boolean check2 = "1".equals(sb.substring(sb.length()-1, sb.length())) && "0".equals(sb.substring(sb.length()-2, sb.length() - 1));
 
