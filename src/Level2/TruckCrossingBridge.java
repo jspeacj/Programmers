@@ -1,5 +1,11 @@
 package Level2;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
 public class TruckCrossingBridge {
     public static void main(String[] args) {
         /*
@@ -54,8 +60,32 @@ public class TruckCrossingBridge {
         //int weight = 100;
         //int[] truck_weights = {10,10,10,10,10,10,10,10,10,10};
 
-        int[] time = new int[truck_weights.length]; // 각 트럭의 다리 건넌 시간 (마지막 인덱스가 다리 건너는 시간만 충족하면됨)
-        int answer = 0;
-        int location = 0; // 필요한지 검토
+        /*
+            문제 이해 및 알고리즘 작성
+            - 문제 이해 -
+            1. 다리에는 주어진 무게(weight)이하 만큼 트럭이 순차적으로 갈 수 있다.
+            2. 다음 무게(weight)를 초과할 경우 현재 다리에 있는 가장 앞에있는 트럭이 지나갈때까지 반복문을 수행한다 (시간초는 주어줘야함)
+            3. 가장 앞에있는 트럭이 다리를 지났을 떄, 현재 무게 + 다음 트럭 무게가 주어진 무게보다 클 경우 반복문을 동일 조건으로 계속 수행한다.
+            (주어진 무게보다 작을 경우까지 반복문 수행)
+            4. 마지막 트럭이 다리를 지난 시간이 주어진 도로 거리 보다 클 경우 로직을 종료한다.
+            5. 총 시간 answer 를 반환한다.
+
+            - 선언해야하는 부분 -
+            1. prWeight : 현재 다리의 무게
+            2. List<Integer> weightList : 현재 다리를 건너고 있는 트럭들의 순서 및 무게
+               (prWeight는 list 인덱스들의 합)
+            3. List<Integer> timeList : 현재 다리를 건너고 있는 트럭들의 순서 및 시간
+               (첫번쨰 행의 시간이 주어진 다리 길이보다 클 경우 weightList와 함꼐 remove시킨다.)
+            4. Queue<Integer> queue : 다리를 지나갈 트럭들의 무게를 순서대로 집어넣는다.
+            5. answer : 모든 트럭이 지나간 시간(초)
+        * */
+        int prWeight = 0; // 현재 다리의 무게
+        int answer = 0; // 모든 트럭이 지나간 시간(초)
+        List<Integer> weightList = new ArrayList<>(); // 현재 다리를 건너고 있는 트럭들의 순서 및 무게 (prWeight는 list 인덱스들의 합)
+        List<Integer> timeList = new ArrayList<>(); // 현재 다리를 건너고 있는 트럭들의 순서 및 시간
+        Queue<Integer> queue = new LinkedList<>();
+
+        // 다리를 지나갈 트럭들의 무게를 순서대로 집어넣는다.
+        for (int n : truck_weights) queue.add(n);
     }
 }
