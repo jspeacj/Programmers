@@ -46,9 +46,9 @@ public class TruckCrossingBridge {
          */
 
         /* TC 1 return 8 */
-        int bridge_length = 2;
-        int weight = 10;
-        int[] truck_weights = {7, 4, 5, 6};
+        //int bridge_length = 2;
+        //int weight = 10;
+        //int[] truck_weights = {7, 4, 5, 6};
 
         /* TC 2 return 101 */
         //int bridge_length = 100;
@@ -56,9 +56,9 @@ public class TruckCrossingBridge {
         //int[] truck_weights = {10};
 
         /* TC 3 return 110 */
-        //int bridge_length = 100;
-        //int weight = 100;
-        //int[] truck_weights = {10,10,10,10,10,10,10,10,10,10};
+        int bridge_length = 100;
+        int weight = 100;
+        int[] truck_weights = {10,10,10,10,10,10,10,10,10,10};
 
         /*
             문제 이해 및 알고리즘 작성
@@ -79,6 +79,7 @@ public class TruckCrossingBridge {
             4. Queue<Integer> queue : 다리를 지나갈 트럭들의 무게를 순서대로 집어넣는다.
             5. answer : 모든 트럭이 지나간 시간(초)
         * */
+
         int prWeight = 0; // 현재 다리의 무게
         int answer = 0; // 모든 트럭이 지나간 시간(초)
         List<Integer> weightList = new ArrayList<>(); // 현재 다리를 건너고 있는 트럭들의 순서 및 무게 (prWeight는 list 인덱스들의 합)
@@ -87,5 +88,49 @@ public class TruckCrossingBridge {
 
         // 다리를 지나갈 트럭들의 무게를 순서대로 집어넣는다.
         for (int n : truck_weights) queue.add(n);
+
+        Iterator<Integer> iterator = queue.iterator();
+
+        while (iterator.hasNext()) {
+            Integer next = iterator.next();
+            answer++;
+            prWeight = inBridgeTime(weightList, timeList, prWeight, bridge_length);
+
+            if (prWeight + next > weight) {
+                while (true) {
+                    if (prWeight + next <= weight) break;
+                    answer++;
+                    prWeight = inBridgeTime(weightList, timeList, prWeight, bridge_length);
+                }
+            }
+
+            weightList.add(next);
+            timeList.add(1);
+            prWeight += next;
+
+            if (!iterator.hasNext()) {
+                while (prWeight > 0) {
+                    answer++;
+                    prWeight = inBridgeTime(weightList, timeList, prWeight, bridge_length);
+                }
+                break;
+            }
+        }
+
+        System.out.println(answer);
+    }
+
+    private static int inBridgeTime(List<Integer> weightList, List<Integer> timeList, int prWeight, int bridge_length) {
+        for (int index = 0; index < timeList.size(); index++) {
+            timeList.set(index, timeList.get(index) + 1);
+            if (timeList.get(index) > bridge_length) {
+                prWeight -= weightList.get(index);
+                weightList.remove(index);
+                timeList.remove(index);
+                index--;
+            }
+        }
+
+        return prWeight;
     }
 }
