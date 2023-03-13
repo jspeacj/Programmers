@@ -32,19 +32,21 @@ public class LargestNumber {
         // 999, 555, 343, 333, 303
         // 9, 5, 34, 3, 30
         // 9534330 ..
+
         /* TC 3 return "0" */
         //int[] numbers = {0, 0};
 
         /* TC 4 return 979 97 978 818 81 817 */
+
+        // 81, 818 => 81818 or 81881 (o)
         //int[] numbers = {979, 97, 978, 81, 818, 817};
 
         /* TC 5 return "121312 */
         //int[] numbers = {12, 1213};
 
         /* TC 6 return  "8989881881110100100000"*/
-        //               8988981881110100100000
-        // 89/898/818/81/1/10/100/1000/0/0
-        // 89/898/818/81/1/10/100/1000/0/0
+        //              89/898/818/81/1/10/100/1000/0/0
+        //int[] numbers = {1, 10, 100, 1000, 818, 81, 898, 89, 0, 0};
         // 898 , 89 => 89889 or 89898 (o)
         // 818 , 81 => 81818 or 81881 (o)
         // 1 5 => 111 555
@@ -53,6 +55,8 @@ public class LargestNumber {
         // 9, 998 => 9998 9989
         // 9, 912 => 9912 9129
 
+        /* TC7 */
+        //int[] numbers = {0, 0, 0, 1000};
         /*
                - 문제에서 주의할 점 -
                ex) 3, 32 => 323 or 332
@@ -71,77 +75,17 @@ public class LargestNumber {
 
        */
 
-        /* Try 1 customSorted를 이용하여 정리 : 특정 테스트 케이스 런타임 에러로 인해 실패 */
+        // 정수배열을 문자열 배열로 변환
+        String[] nums = new String[numbers.length];
+        for (int i = 0; i < numbers.length; i++) nums[i] = Integer.toString(numbers[i]);
+
+        // 문자열 배열을 내림차순으로 정렬
+        Arrays.sort(nums, (a, b) -> (b + a).compareTo(a + b));
+
+        // 정렬된 배열에서 가장 큰 숫자 만들기
         StringBuilder sb = new StringBuilder();
-        Integer[] numArrays = Arrays.stream(numbers).boxed().toArray(Integer[]::new);
+        for (String num : nums) sb.append(num);
 
-        Arrays.sort(numArrays, (num1, num2) -> num1 == num2 ? 0 : customSorted(num1, num2));
-        for (int n : numArrays) sb.append(n);
-
-        System.out.println("0".equals(sb.toString().substring(0, 1)) ? "0" : sb.toString());
-
-        /* Try 2 class Number를 정의하여 문제를 처리 */
-        Number number = new Number();
-
-
-    }
-
-    public static class Number {
-        int originNum;
-        int settingNum;
-        int location;
-
-        public int getOriginNum() {
-            return originNum;
-        }
-
-        public void setOriginNum(int originNum) {
-            this.originNum = originNum;
-        }
-
-        public int getSettingNum() {
-            return settingNum;
-        }
-
-        public void setSettingNum(int settingNum) {
-            this.settingNum = settingNum;
-        }
-
-        public int getLocation() {
-            return location;
-        }
-
-        public void setLocation(int location) {
-            this.location = location;
-        }
-    }
-    private static Integer customSorted(Integer num1, Integer num2) {
-        char[] chars1 = num1.toString().toCharArray();
-        char[] chars2 = num2.toString().toCharArray();
-
-        int length = chars1.length < chars2.length ? chars1.length : chars2.length;
-
-        for (int i = 0; i < length; i++) {
-            int numericValue1 = Character.getNumericValue(chars1[i]);
-            int numericValue2 = Character.getNumericValue(chars2[i]);
-
-            if (numericValue1 == numericValue2) continue;
-            else return numericValue2 - numericValue1;
-        }
-
-        if (chars1.length != chars2.length) {
-            if (Math.max(chars1.length, chars2.length) == 3) {
-                if (length == 2) return chars2[0] - chars2[1];
-                else if (length == 1) return num1 - num2;
-            }
-
-            if (length == chars1.length) {
-                return chars1[0] - chars2[length] == 0 ? num2 - num1 : chars1[0] - chars2[length];
-            } else {
-                return chars2[0] - chars1[length] == 0 ? num2 - num1 : chars2[0] - chars1[length];
-            }
-        }
-
-        return 0;
+        System.out.println("0".equals(sb.substring(0, 1)) ? "0" : sb.toString());
     }
 }
