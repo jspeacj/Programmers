@@ -62,59 +62,7 @@ public class CountQuadCompression {
         /* TC 2 answer : [10, 15] */
         int[][] arr = {{1,1,1,1,1,1,1,1},{0,1,1,1,1,1,1,1},{0,0,0,0,1,1,1,1},{0,1,0,0,1,1,1,1},{0,0,0,0,0,0,1,1},{0,0,0,0,0,0,0,1},{0,0,0,0,1,0,0,1},{0,0,0,0,1,1,1,1}};
 
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[0].length; j++) {
-                System.out.print(" " + arr[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        int[] answer = new int[2];
-
-        firstCompression(arr, answer);
-
-        if (answer[0] == 0 && answer[1] == 0) quadCompression(arr, answer, 0, arr.length / 2);
-
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[0].length; j++) {
-                System.out.print(" " + arr[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        /* ★★★최종적으로 -1이 아닌 값들을 더한다음에 반환하면됨!★★★*/
-        System.out.println(Arrays.toString(answer));
-    }
-
-    private static void firstCompression(int[][] arr, int[] answer) {
-        int checkNum = arr[0][0];
-        boolean flag = false;
-
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr.length; j++) {
-                if (checkNum != arr[i][j]) {
-                    flag = true;
-                    break;
-                }
-                if (flag) break;
-            }
-        }
-
-        if (!flag) {
-            answer[checkNum]++;
-            settingArray(arr, 0, arr.length, 0, arr[0].length);
-        }
-    }
-
-    private static void settingArray(int[][] arr, int rowMin, int rowMax, int colMin, int colMax) {
-            for (int i = rowMin; i < rowMax; i++) {
-                for (int j = colMin; j < colMax; j++) {
-                    arr[i][j] = setNum;
-                }
-            }
-    }
-
-    /*
+        /*
             - 규칙 -
 
          max : 가운데 좌표 기준
@@ -136,67 +84,35 @@ public class CountQuadCompression {
 
          => 최초 정사각형일 떄를 제외하고 위의 규칙대로 4번 수행
         * */
-    private static void quadCompression(int[][] arr, int[] answer, int min, int length) {
-        int rowMin = min;
-        int rowMax = rowMin + length;
-        int colMin = min;
-        int colMax = colMin + length;
-        compression(arr, answer, rowMin, rowMax, colMin, colMax);
 
-        rowMin = min;
-        rowMax = rowMin + length;
-        colMin = length;
-        colMax = colMin + length;
-        compression(arr, answer, rowMin, rowMax, colMin, colMax);
+        int[] answer = new int[2];
 
-        rowMin = length;
-        rowMax = rowMin + length;
-        colMin = min;
-        colMax = colMin + length;
-        compression(arr, answer, rowMin, rowMax, colMin, colMax);
-
-        rowMin = length;
-        rowMax = rowMin + length;
-        colMin = length;
-        colMax = colMin + length;
-        compression(arr, answer, rowMin, rowMax, colMin, colMax);
-
-        /*if (length > 2) {
-            length /= 2;
-            quadCompression(arr, answer, 0, length);
-        }*/
+        compression(0, 0, arr.length, arr, answer);
+        System.out.println(Arrays.toString(answer));
     }
 
-    private static void compression(int[][] arr, int[] answer, int rowMin, int rowMax, int colMin, int colMax) {
-        // 문제점 : 쪼갠거에서 아래처럼 다시 쪼갤 수있는경우에도 다시 검토해야함!
-        /*
-             1  1  3  3  3  3  3  3
-             0  1  3  3  3  3  3  3
-             0  0  3  3  3  3  3  3
-             0  1  3  3  3  3  3  3
-             3  3  3  3  (0  0)  1  1
-             3  3  3  3  (0  0)  0  1
-             3  3  3  3  1  0  0  1
-             3  3  3  3  1  1  1  1
-        * */
-        int checkNum = arr[rowMin][colMin];
-        boolean flag = false;
+    private static void compression(int row, int col, int length, int[][] arr, int[] answer) {
+        if (check(row, col, length, arr)) {
+            answer[arr[row][col]]++;
+            return;
+        }
 
-        for (int i = rowMin; i < rowMax; i++) {
-            for (int j = colMin; j < colMax; j++) {
-                if (arr[i][j] == setNum || checkNum == setNum || checkNum != arr[i][j]) {
-                    flag = true;
-                    break;
-                }
+        length /= 2;
+
+        compression(row, col, length, arr, answer);
+        compression(row + length, col, length, arr, answer);
+        compression(row, col + length, length, arr, answer);
+        compression(row + length, col + length, length, arr, answer);
+    }
+
+    private static boolean check(int row, int col, int length, int[][] arr) {
+        int val = arr[row][col];
+
+        for (int i = row; i < row + length; i++) {
+            for (int j = col; j < col + length; j++) {
+                if (arr[i][j] != val) return false;
             }
-            if (flag) break;
         }
-
-        if (!flag) {
-            answer[checkNum]++;
-            settingArray(arr, rowMin, rowMax, colMin, colMax);
-        }
-
-        if ((rowMax - rowMin) >= 4) quadCompression(arr, answer, rowMin,(rowMax - rowMin) / 2);
+        return true;
     }
 }
