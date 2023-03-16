@@ -23,5 +23,34 @@ public class MakeBigNumbers {
             "1231234"	    3	"3234"
             "4177252841"	4	"775841"
          */
+
+        /* TC 1 return : "94" */
+        //String number = "1924";
+        //int k = 2;
+
+        /* TC 2 return : "3234" */
+        //String number = "1231234";
+        //int k = 3;
+
+        /* TC 3 return : "775841" */
+        String number = "4177252841";
+        int k = 4;
+
+        int idx = 0;
+        char max;
+        StringBuilder answer = new StringBuilder();
+
+        if(number.charAt(0) == '0') System.out.println("0");
+        for(int i = 0; i < number.length() - k; i++) {
+            max = '0';
+            for(int j = idx; j <= k + i; j++) {
+                if(max < number.charAt(j)) {
+                    max = number.charAt(j);
+                    idx = j + 1;
+                }
+            }
+            answer.append(max);
+        }
+        System.out.println(answer.toString());
     }
 }
