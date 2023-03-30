@@ -1,8 +1,11 @@
 package Level2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -10,6 +13,7 @@ public class MenuRenewal {
     public static void main(String[] args) {
         /*
             메뉴 리뉴얼
+
             문제 설명
             레스토랑을 운영하던 스카피는 코로나19로 인한 불경기를 극복하고자 메뉴를 새로 구성하려고 고민하고 있습니다.
             기존에는 단품으로만 제공하던 메뉴를 조합해서 코스요리 형태로 재구성해서 새로운 메뉴를 제공하기로 결정했습니다.
@@ -81,62 +85,72 @@ public class MenuRenewal {
 
           - 알고리즘 설계 -
           1. 해시맵을 선언
-          2. 모든 경우의 수를 구해야한다. (순서는 고정. 너비우선탐색(BFS)기법사용하기)
+          2. 모든 경우의 수를 구해야한다. (순서는 고정. 깊이우선탐색(DFS)기법사용하기)
           3. 배열의 각문자열을 반복문을 통해 나열
-          4. 문자열을 앞문자부터 course의 값만큼 문자를 잘라낸다. (반복문을 이용하며, 잘라내는 길이보다 course의 값이 더 클 경우 이후 로직을 수행하지 않고 해당 반복문을 종료처리)
+          4. 문자열을 앞문자부터 course의 값만큼 문자를 잘라낸다.
+          (반복문을 이용하며, 잘라내는 길이보다 course의 값이 더 클 경우 이후 로직을 수행하지 않고 해당 반복문을 종료처리)
           5. 해당 잘라낸 문자열을 키 값으로하며 밸류 값을 +1증가
           6. 이떄, 각 코스 개수의 최대값을 알고있어야 하므로, 선언해둔 courseArrays의 인덱스 값과 비교하여 현재 밸류값이 더 클 경우 해당 밸류값으로 배열의 값을 변경한다.
           7. course 반복문이 종료되면 다음 문자로 넘어가며 다시 위 3 ~ 4번 케이스를 반복한다.
         * */
 
         /* TC 1 result : ["AC", "ACDE", "BCFG", "CDE"] */
-        String[] orders = {"ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"};
-        int[] course = {2, 3, 4};
+        //String[] orders = {"ABCFG", "AC", "CDE", "ACDE", "BCFG", "ACDEH"};
+        //int[] course = {2, 3, 4};
+
         /* TC 2 result : ["ACD", "AD", "ADE", "CD", "XYZ"] */
-        /*
-        String[] orders = {"ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"};
-        int[] course = {2, 3, 5};
-         */
+        //String[] orders = {"ABCDE", "AB", "CD", "ADE", "XYZ", "XYZ", "ACD"};
+        //int[] course = {2, 3, 5};
 
         /* TC 3 result : ["WX", "XY"] */
-        /*
         String[] orders = {"XYZ", "XWY", "WXA"};
         int[] course = {2, 3, 4};
-         */
 
-        int[] courseArrays = new int[course.length];
+        int[] courseArrays = new int[findLength(course)];
         Map<String, Integer> map = new HashMap<>();
         Stack<String>  stack = new Stack<>();
+        List<String> answerList = new ArrayList<>();
 
-        for (int i = 0; i < course.length; i++) {
-            for (String str : orders) {
-                dfs(str, 0, course, i, stack, map, courseArrays);
-            }
+        for (int num : course) {
+            for (String str : orders) dfs(str, 0, num, stack, map, courseArrays);
         }
 
+        for (String str : map.keySet()) {
+            if (courseArrays[str.length()] >= 2 && map.get(str) == courseArrays[str.length()]) answerList.add(str);
+        }
 
-        //★★★ 코스가 두개일경우4가나와야함★★★
-        System.out.println(map);
-        System.out.println(Arrays.toString(courseArrays));
+        answerList.sort(Comparator.naturalOrder());
+        System.out.println(Arrays.toString(answerList.toArray(new String[answerList.size()])));
     }
 
-    private static void dfs(String str, int strIndex , int[] course, int courseIndex, Stack<String> stack, Map<String, Integer> map, int[] courseArrays) {
+    public static int findLength (int[] course) {
+        int max = 0;
+        for (int num : course) if (num > max) max = num;
+        return course.length > max ? course.length + 1: max + 1;
+    }
+
+    private static void dfs(String str, int strIndex, int courseIndex, Stack<String> stack, Map<String, Integer> map, int[] courseArrays) {
         for (int i = strIndex; i < str.length(); i++) {
             stack.push(str.substring(i, i+1));
-            if (course[courseIndex] > stack.size()) dfs(str, i + 1, course, courseIndex, stack, map, courseArrays);
-            else if (course[courseIndex] == stack.size()) {
+            if (courseIndex == stack.size() + 1) {
                 Iterator iterator = stack.iterator();
                 StringBuilder sb = new StringBuilder();
 
                 while (iterator.hasNext()) sb.append(iterator.next());
 
-                int value = map.getOrDefault(sb.toString(), 0) + 1;
-                if (value > courseArrays[courseIndex]) courseArrays[courseIndex] = value;
+                for (int j = i + 1; j < str.length(); j++) {
+                    String menuBeforeSort = sb + str.substring(j, j + 1);
+                    char[] menuArrays = menuBeforeSort.toCharArray();
+                    Arrays.sort(menuArrays);
+                    String menu = new String(menuArrays);
+                    int value = map.getOrDefault(menu, 0) + 1;
+                    if (value > courseArrays[courseIndex]) courseArrays[courseIndex] = value;
+                    map.put(menu, value);
+                }
 
-                map.put(sb.toString(), value);
                 stack.pop();
-                return;
-            }
+                continue;
+            } else if (courseIndex > stack.size()) dfs(str, i + 1, courseIndex, stack, map, courseArrays);
             stack.pop();
         }
     }
