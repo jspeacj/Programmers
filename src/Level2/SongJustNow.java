@@ -61,12 +61,12 @@ public class SongJustNow {
         //String[] musicinfos = {"03:00,03:30,FOO,CC#B", "04:00,04:08,BAR,CC#BCC#BCC#B"};
 
         /* TC 3 answer : "WORLD" */
-        //String m = "ABC";
-        //String[] musicinfos = {"12:00,12:14,HELLO,C#DEFGAB", "13:00,13:05,WORLD,ABCDEF"};
+        String m = "ABC";
+        String[] musicinfos = {"12:00,12:14,HELLO,C#DEFGAB", "13:00,13:05,WORLD,ABCDEF"};
 
         /* TC 4 answer : "TEST" */
-        String m = "DF";
-        String[] musicinfos = {"6:20,6:50,TEST,DDF"};
+        //String m = "DF";
+        //String[] musicinfos = {"6:20,6:50,TEST,DDF"};
         /*
          - 알고리즘 로직 -
           1. 노래 시작 시간과 종료 시간의 차이를 구해서 time에 담는다.
@@ -140,14 +140,21 @@ public class SongJustNow {
         int index = 0;
         for (int i = 0; i < sbList.size(); i++) {
             if (sbList.get(i).equals(mList.get(index))) {
-                index++;
-                flag = true;
-            } else {
-                index = 0;
-                flag = false;
+                for (int j = i; j < sbList.size(); j++) {
+                    if (index == mList.size() && flag) break;
+
+                    if (sbList.get(j).equals(mList.get(index))) {
+                        index++;
+                        flag = true;
+                    } else {
+                        index = 0;
+                        flag = false;
+                        break;
+                    }
+                }
             }
 
-            if (index == mList.size() && flag) break;
+            if (flag) break;
         }
 
         if (index != mList.size()) flag = false;
