@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class MaximizeFormula {
-    private static int Max_VALUE = 0;
+    private static long MAX_VALUE = 0;
     public static void main(String[] args) {
         /*
             [카카오 인턴] 수식 최대화
@@ -78,12 +78,11 @@ public class MaximizeFormula {
             따라서, 우승 시 받을 수 있는 상금은 300 입니다.
          */
 
-
         /* TC 1 result : 60420 */
-        String expression = "100-200*300-500+20";
+        //String expression = "100-200*300-500+20";
 
         /* TC 2 result : 300 */
-        //String expression = "50*6-3*2";
+        String expression = "50*6-3*2";
 
         List<String> expressSplitList = new ArrayList<>();
         List<String> operatorList = new ArrayList<>();
@@ -106,39 +105,65 @@ public class MaximizeFormula {
         if (expression.indexOf("-") > -1) operatorList.add("-");
         boolean[] checkFlag = new boolean[operatorList.size()];
 
-        bfs(operatorList, stack, checkFlag, expression, expressSplitList);
+        dfs(operatorList, stack, checkFlag, expression, expressSplitList);
+        System.out.println(MAX_VALUE);
     }
 
-    private static void bfs(List<String> operatorList, Stack<String> stack, boolean[] checkFlag, String expression, List<String> expressSplitList) {
+    private static void dfs(List<String> operatorList, Stack<String> stack, boolean[] checkFlag, String expression, List<String> expressSplitList) {
         for (int i = 0; i < operatorList.size(); i++) {
-            //System.out.println("bfs 시작 : " + stack + "  ,i : " + i + ",  checkFlag : " + Arrays.toString(checkFlag));
             if (checkFlag[i]) continue;
 
             stack.push(operatorList.get(i));
             checkFlag[i] = true;
-            if (stack.size() == 3) {
+            if (stack.size() == operatorList.size()) {
                 checkFlag[i] = false;
                 break;
             }
             else {
-                //System.out.println("bfs 다음 : " + stack + "  ,i : " + i + ",  checkFlag : " + Arrays.toString(checkFlag));
-                bfs(operatorList, stack, checkFlag, expression, expressSplitList);
+                dfs(operatorList, stack, checkFlag, expression, expressSplitList);
                 stack.pop();
                 checkFlag[i] = false;
-                //System.out.println("bfs 종료 : " + stack + "  ,i : " + i + ",  checkFlag : " + Arrays.toString(checkFlag));
-                //System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
             }
         }
 
-        if (stack.size() == 3) {
+        if (stack.size() == operatorList.size()) {
             String str = stack.pop();
             Iterator<String> iterator = stack.iterator();
             while (iterator.hasNext()) str += iterator.next();
 
+            List<String> expressSplitListTemp = new ArrayList<>();
+            for (String s : expressSplitList) expressSplitListTemp.add(s);
+
             for (int i = 0; i < str.length(); i++) {
-                str.substring(i, i+1);
+                String operator = str.substring(i, i + 1);
+                for (int j = 0; j < expressSplitListTemp.size(); j++) {
+                    if (operator.equals(expressSplitListTemp.get(j))) {
+                        long leftNum = Long.parseLong(expressSplitListTemp.get(j - 1));
+                        long rightNum = Long.parseLong(expressSplitListTemp.get(j + 1));
+                        long sum = 0;
+
+                        switch (operator) {
+                            case "*" :
+                                sum = leftNum * rightNum;
+                                break;
+                            case "+" :
+                                sum = leftNum + rightNum;
+                                break;
+                            case "-" :
+                                sum = leftNum - rightNum;
+                                break;
+                        }
+
+                        expressSplitListTemp.set(j-1, String.valueOf(sum));
+                        expressSplitListTemp.remove(j);
+                        expressSplitListTemp.remove(j);
+                        j = 0;
+                    }
+                }
             }
 
+            long total = Math.abs(Long.parseLong(expressSplitListTemp.get(0)));
+            if (total > MAX_VALUE) MAX_VALUE = total;
         }
     }
 }
