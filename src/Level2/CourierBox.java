@@ -49,5 +49,77 @@ public class CourierBox {
 
         /* TC 2 result : 5 */
         //int[] order = {5, 4, 3, 2, 1};
+
+        int answer = 0;
+        int[] orderTemp = new int[order.length + 1];
+        int arrayIndex = order[0];
+        int stackIndex = 0;
+
+        for (int num : order) {
+            if (num > arrayIndex) {
+                orderTemp[num] = 1;
+                arrayIndex = num + 1;
+                stackIndex = 0;
+                for (int i = num -1; i > 0; i--) {
+                    if (orderTemp[i] != 1) {
+                        stackIndex = i;
+                        break;
+                    }
+                }
+
+                if (stackIndex == 0) break;
+            } else if (num == arrayIndex) {
+                orderTemp[num] = 1;
+                arrayIndex = num + 1;
+                stackIndex = num - 1;
+                answer++;
+            } else if (num == stackIndex) {
+                orderTemp[num] = 1;
+                stackIndex--;
+                answer++;
+            } else break;
+        }
+
+        /*
+        List<Integer> list = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+        boolean flag = false;
+        int answer = 0;
+
+        for (int num : order) {
+            if (list.size() == 0 || num < list.get(0)) {
+                if (num != stack.peek()) break;
+                else {
+                    stack.pop();
+                    answer++;
+                }
+            } else if (num == list.get(0)) {
+                list.remove(0);
+                answer++;
+            } else if (num > list.get(0)) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (num > list.get(i)) {
+                        stack.push(list.get(i));
+                        list.remove(i);
+                        i--;
+                    }
+                    else if (num == list.get(i)) break;
+                    else if (num < list.get(i) && num != stack.peek()) {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (flag) break;
+                else {
+                    list.remove(0);
+                    answer++;
+                    continue;
+                }
+            }
+        }
+         */
+
+        System.out.println(answer);
     }
 }
