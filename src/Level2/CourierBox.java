@@ -1,5 +1,8 @@
 package Level2;
 
+import java.util.Arrays;
+import java.util.Stack;
+
 public class CourierBox {
     public static void main(String[] args) {
         /*
@@ -45,80 +48,48 @@ public class CourierBox {
          */
 
         /* TC 1 result : 2 */
-        int[] order = {4, 3, 1, 2, 5};
+        //int[] order = {4, 3, 1, 2, 5};
 
         /* TC 2 result : 5 */
         //int[] order = {5, 4, 3, 2, 1};
 
+        /* TC 3 result : 10 */
+        int[] order = {2, 1, 6, 7, 5, 8, 4, 9, 3, 10};
+
+        /* TC 4 result : 5 */
+        //int[] order = {1, 2, 4, 3, 5};
+
         int answer = 0;
         int[] orderTemp = new int[order.length + 1];
+        Stack<Integer> stack = new Stack<>();
         int arrayIndex = order[0];
-        int stackIndex = 0;
 
         for (int num : order) {
-            if (num > arrayIndex) {
-                orderTemp[num] = 1;
-                arrayIndex = num + 1;
-                stackIndex = 0;
-                for (int i = num -1; i > 0; i--) {
-                    if (orderTemp[i] != 1) {
-                        stackIndex = i;
-                        break;
-                    }
+            if (num == arrayIndex) {
+                for (int i = 1; i < num; i++) {
+                    if (orderTemp[i] == 0) stack.push(i);
                 }
 
-                if (stackIndex == 0) break;
-            } else if (num == arrayIndex) {
                 orderTemp[num] = 1;
-                arrayIndex = num + 1;
-                stackIndex = num - 1;
+                arrayIndex++;
                 answer++;
-            } else if (num == stackIndex) {
-                orderTemp[num] = 1;
-                stackIndex--;
-                answer++;
-            } else break;
-        }
-
-        /*
-        List<Integer> list = new ArrayList<>();
-        Stack<Integer> stack = new Stack<>();
-        boolean flag = false;
-        int answer = 0;
-
-        for (int num : order) {
-            if (list.size() == 0 || num < list.get(0)) {
+            } else if (num < arrayIndex) {
                 if (num != stack.peek()) break;
                 else {
                     stack.pop();
+                    orderTemp[num] = 1;
                     answer++;
                 }
-            } else if (num == list.get(0)) {
-                list.remove(0);
-                answer++;
-            } else if (num > list.get(0)) {
-                for (int i = 0; i < list.size(); i++) {
-                    if (num > list.get(i)) {
-                        stack.push(list.get(i));
-                        list.remove(i);
-                        i--;
-                    }
-                    else if (num == list.get(i)) break;
-                    else if (num < list.get(i) && num != stack.peek()) {
-                        flag = true;
-                        break;
-                    }
+            } else if (num > arrayIndex) {
+                for (int i = arrayIndex; i < num; i++) {
+                    if (orderTemp[i] == 0) stack.push(i);
                 }
 
-                if (flag) break;
-                else {
-                    list.remove(0);
-                    answer++;
-                    continue;
-                }
+                orderTemp[num] = 1;
+                arrayIndex++;
+                answer++;
             }
         }
-         */
 
         System.out.println(answer);
     }
