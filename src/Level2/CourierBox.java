@@ -1,6 +1,5 @@
 package Level2;
 
-import java.util.Arrays;
 import java.util.Stack;
 
 public class CourierBox {
@@ -54,39 +53,26 @@ public class CourierBox {
         //int[] order = {5, 4, 3, 2, 1};
 
         /* TC 3 result : 10 */
-        int[] order = {2, 1, 6, 7, 5, 8, 4, 9, 3, 10};
+        //int[] order = {2, 1, 6, 7, 5, 8, 4, 9, 3, 10};
 
         /* TC 4 result : 5 */
-        //int[] order = {1, 2, 4, 3, 5};
+        int[] order = {1, 2, 4, 3, 5};
 
         int answer = 0;
-        int[] orderTemp = new int[order.length + 1];
-        Stack<Integer> stack = new Stack<>();
-        int arrayIndex = order[0];
+        Stack<Integer> assistant = new Stack<>();
+        int index = 0;
 
-        for (int num : order) {
-            if (num == arrayIndex) {
-                for (int i = 1; i < num; i++) {
-                    if (orderTemp[i] == 0) stack.push(i);
-                }
+        for (int i = 1; i <= order.length; i++) {
+            if (order[index] != i) {
+                assistant.push(i);
+                continue;
+            }
+            index++;
+            answer++;
 
-                orderTemp[num] = 1;
-                arrayIndex++;
-                answer++;
-            } else if (num < arrayIndex) {
-                if (num != stack.peek()) break;
-                else {
-                    stack.pop();
-                    orderTemp[num] = 1;
-                    answer++;
-                }
-            } else if (num > arrayIndex) {
-                for (int i = arrayIndex; i < num; i++) {
-                    if (orderTemp[i] == 0) stack.push(i);
-                }
-
-                orderTemp[num] = 1;
-                arrayIndex++;
+            while (!assistant.isEmpty() && order[index] == assistant.peek()) {
+                assistant.pop();
+                index++;
                 answer++;
             }
         }
