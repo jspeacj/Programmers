@@ -65,14 +65,14 @@ public class RotateMatrixBorders {
         //int[][] queries = {{2,2,5,4},{3,3,6,6},{5,1,6,3}};
 
         // TC 2 result : [1, 1, 5, 3] */
-        int rows = 3;
-        int columns = 3;
-        int[][] queries = {{2,2,5,4},{3,3,6,6},{5,1,6,3}};
+        //int rows = 3;
+        //int columns = 3;
+        //int[][] queries = {{1,1,2,2},{1,2,2,3},{2,1,3,2},{2,2,3,3}};
 
         /* TC 3 result : [1] */
-        //int rows = 100;
-        //int columns = 97;
-        //int[][] queries = {{2,2,5,4},{3,3,6,6},{5,1,6,3}};
+        int rows = 100;
+        int columns = 97;
+        int[][] queries = {{1,1,100,97}};
 
         int[][] arrays = new int[rows][columns];
         int[] answer = new int[queries.length];
@@ -81,24 +81,10 @@ public class RotateMatrixBorders {
         int cnt = 1;
 
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                arrays[i][j] = cnt++;
-            }
+            for (int j = 0; j < columns; j++) arrays[i][j] = cnt++;
         }
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                String str = "";
-                if (arrays[i][j] <= 9) str = " ";
-                System.out.print(str + " " + arrays[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        for (int[] arr : queries) {
-            answer[index++] = rotate(arrays, arr, queue);
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-        }
+        for (int[] arr : queries) answer[index++] = rotate(arrays, arr, queue);
 
         System.out.println(Arrays.toString(answer));
     }
@@ -128,40 +114,16 @@ public class RotateMatrixBorders {
             else arrays[row][i] = queue.poll();
         }
 
-        System.out.println("StepOne : ");
-        for (int i = 0; i < arrays.length; i++) {
-            for (int j = 0; j < arrays[0].length; j++) {
-                String str = "";
-                if (arrays[i][j] <= 9) str = " ";
-                System.out.print(str + " " + arrays[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ min : " + min + ", queue : " + queue);
-
         return min;
     }
 
     private static int rotateStepTwo(int[][] arrays, int col, int minRow, int maxRow, int min, Queue<Integer> queue) {
-        System.out.println("minRow : " + minRow + ", maxRow : " + maxRow);
         for (int i = minRow + 1; i <= maxRow; i++) {
             min = Math.min(min, arrays[i][col]);
             queue.add(arrays[i][col]);
             arrays[i][col] = queue.poll();
         }
 
-        System.out.println("StepTwo : ");
-        for (int i = 0; i < arrays.length; i++) {
-            for (int j = 0; j < arrays[0].length; j++) {
-                String str = "";
-                if (arrays[i][j] <= 9) str = " ";
-                System.out.print(str + " " + arrays[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ min : " + min + ", queue : " + queue);
         return min;
     }
 
@@ -171,18 +133,6 @@ public class RotateMatrixBorders {
             queue.add(arrays[row][i - 1]);
             arrays[row][i - 1] = queue.poll();
         }
-
-        System.out.println("StepThree : ");
-        for (int i = 0; i < arrays.length; i++) {
-            for (int j = 0; j < arrays[0].length; j++) {
-                String str = "";
-                if (arrays[i][j] <= 9) str = " ";
-                System.out.print(str + " " + arrays[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ min : " + min + " ,queue : " + queue);
 
         return min;
     }
@@ -195,18 +145,6 @@ public class RotateMatrixBorders {
         }
 
         while (!queue.isEmpty()) queue.poll();
-
-        System.out.println("StepFour : ");
-        for (int i = 0; i < arrays.length; i++) {
-            for (int j = 0; j < arrays[0].length; j++) {
-                String str = "";
-                if (arrays[i][j] <= 9) str = " ";
-                System.out.print(str + " " + arrays[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ min : " + min + ", queue : " +queue);
 
         return min;
     }
