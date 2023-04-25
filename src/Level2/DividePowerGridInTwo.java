@@ -60,16 +60,16 @@ public class DividePowerGridInTwo {
          */
         
         /* TC 1 result : 3 */
-        int n = 9;
-        int[][] wires = {{1,3},{2,3},{3,4},{4,5},{4,6},{4,7},{7,8},{7,9}};
+        //int n = 9;
+        //int[][] wires = {{1,3},{2,3},{3,4},{4,5},{4,6},{4,7},{7,8},{7,9}};
         
         /* TC 2 result : 0 */
         //int n = 4;
         //int[][] wires = {{1,2},{2,3},{3,4}};
 
         /* TC 3 result : 1 */
-        //int n = 7;
-        //int[][] wires = {{1,2},{2,7},{3,7},{3,4},{4,5},{6,7}};
+        int n = 7;
+        int[][] wires = {{1,2},{2,7},{3,7},{3,4},{4,5},{6,7}};
 
         int answer = Integer.MAX_VALUE;
         List<Node>[] list = new ArrayList[n+1];
@@ -79,21 +79,23 @@ public class DividePowerGridInTwo {
         for (int i = 0; i < wires.length; i++) {
             int size = 0;
             init(list, check, wires, i);
-            queue.add(new Node(wires[i][0]));
+            if (i == wires.length - 1) queue.add(new Node(wires[0][0]));
+            else queue.add(new Node(wires[i + 1][0]));
             
             while (!queue.isEmpty()) {
                 Node node = queue.poll();
                 int index = node.getIndex();
-
                 if (check[index]) continue;
                 else check[index] = true;
 
                 size++;
                 for (Node nd : list[index]) queue.add(new Node(nd.getIndex()));
             }
-
-            System.out.println(size);
+            int other = n - size;
+            if (answer > Math.abs(size - other)) answer = Math.abs(size - other);
         }
+
+        System.out.println(answer);
     }
 
     private static void init(List<Node>[] list, boolean[] check, int[][] wires, int index) {
