@@ -14,7 +14,7 @@ public class CheckYourDistance {
             코로나 바이러스 감염 예방을 위해 응시자들은 거리를 둬서 대기를 해야하는데 개발 직군 면접인 만큼
             아래와 같은 규칙으로 대기실에 거리를 두고 앉도록 안내하고 있습니다.
              1. 대기실은 5개이며, 각 대기실은 5x5 크기입니다.
-             2. 거리두기를 위하여 응시자들 끼리는 맨해튼 거리(1)가 2 이하로 앉지 말아 주세요.
+             2. 거리두기를 위하여 응시자들 끼리는 맨해튼 거리가 2 이하로 앉지 말아 주세요.
              3. 단 응시자가 앉아있는 자리 사이가 파티션으로 막혀 있을 경우에는 허용합니다.
 
             예를 들어,
@@ -144,9 +144,7 @@ public class CheckYourDistance {
 
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[0].length;j ++) {
-                if ("P".equals(arr[i][j])) {
-                    flag = checkDistanc(arr, i, j);
-                }
+                if ("P".equals(arr[i][j])) flag = checkDistanc(arr, i, j);
                 if (!flag) break;
             }
             if (!flag) break;
@@ -156,15 +154,15 @@ public class CheckYourDistance {
     }
 
     private static boolean checkDistanc(String[][] places, int i, int j) {
-        if (i - 1 > 0 && j - 1 > 0 && (!"X".equals(places[i-1][j]) || !"X".equals(places[i][j-1]))) {
+        if (i - 1 >= 0 && j - 1 >= 0 && (!"X".equals(places[i-1][j]) || !"X".equals(places[i][j-1]))) {
             if ("P".equals(places[i-1][j-1])) return false;
         }
 
-        if (i + 1 < 5 && j - 1 > 0 && (!"X".equals(places[i+1][j]) || !"X".equals(places[i][j-1]))) {
+        if (i + 1 < 5 && j - 1 >= 0 && (!"X".equals(places[i+1][j]) || !"X".equals(places[i][j-1]))) {
             if ("P".equals(places[i+1][j-1])) return false;
         }
 
-        if (i - 1 > 0 && j + 1 < 5 && (!"X".equals(places[i-1][j]) || !"X".equals(places[i][j+1]))) {
+        if (i - 1 >= 0 && j + 1 < 5 && (!"X".equals(places[i-1][j]) || !"X".equals(places[i][j+1]))) {
             if ("P".equals(places[i-1][j+1])) return false;
         }
 
@@ -172,26 +170,26 @@ public class CheckYourDistance {
             if ("P".equals(places[i+1][j+1])) return false;
         }
 
-        for (int row = i+1; row <= i + 3; row++) {
+        for (int row = i+1; row <= i + 2; row++) {
             if (row >= places.length) break;
             if ("X".equals(places[row][j])) break;
             if ("P".equals(places[row][j])) return false;
         }
 
-        for (int row = i-1; row >= i - 3; row--) {
-            if (row <= 0) break;
+        for (int row = i-1; row >= i - 2; row--) {
+            if (row < 0) break;
             if ("X".equals(places[row][j])) break;
             if ("P".equals(places[row][j])) return false;
         }
 
-        for (int col = j+1; col <= j + 3; col++) {
+        for (int col = j+1; col <= j + 2; col++) {
             if (col >= places[0].length) break;
             if ("X".equals(places[i][col])) break;
             if ("P".equals(places[i][col])) return false;
         }
 
-        for (int col = j-1; col >= j - 3; col--) {
-            if (col <= 0) break;
+        for (int col = j-1; col >= j - 2; col--) {
+            if (col < 0) break;
             if ("X".equals(places[i][col])) break;
             if ("P".equals(places[i][col])) return false;
         }
