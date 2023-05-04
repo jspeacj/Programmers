@@ -46,64 +46,6 @@ public class RunningRace {
         String[] players = {"mumu", "soe", "poe", "kai", "mine"};
         String[] callings = {"kai", "kai", "mine", "mine"};
 
-        /*
-        List<String> list = new ArrayList<>();
-
-        for (String str : players) list.add(str);
-        System.out.println(list);
-
-        for (String str : callings) {
-            int playerIndex = list.indexOf(str);
-            list.remove(playerIndex);
-            list.add(playerIndex - 1, str);
-        }
-
-        String[] answer = list.toArray(new String[list.size()]);
-        System.out.println(Arrays.toString(answer));
-        */
-
-        /*
-        Map<String, Position> map = new HashMap<>();
-        String[] answer = new String[players.length];
-
-        for (int index = 0; index < players.length; index++) {
-            Position position = null;
-            if (index == 0) position = new Position(index, players[index],"", players[index+1]);
-            else if (index == players.length - 1) position = new Position(index, players[index], players[index-1], "");
-            else position = new Position(index, players[index], players[index-1], players[index+1]);
-
-            map.put(players[index], position);
-        }
-
-        for (String str : callings) {
-            Position callPosition = map.get(str);
-            Position frontPosition = map.get(callPosition.getFrontPlayer());
-            Position beforePosition = map.get(callPosition.getBeforePlayer());
-
-            settingPosition(callPosition, frontPosition, beforePosition);
-        }
-
-        for (String str : map.keySet()) answer[map.get(str).getIndex()] = str;
-
-        System.out.println(Arrays.toString(answer));
-        */
-
-
-        /*
-        Queue<String> queue = new LinkedList<>();
-        String[] answer = new String[players.length];
-
-        for (String str : players) queue.add(str);
-
-        for (String str : callings) {
-            settingQueue(str, queue);
-        }
-
-        for (int i = 0; i < answer.length; i++) answer[i] = queue.poll();
-
-        System.out.println(Arrays.toString(answer));
-        */
-
         Map<String, Integer> player = new HashMap<>();
         Map<Integer, String> indexMap = new HashMap<>();
         String[] answer = new String[players.length];
@@ -117,95 +59,14 @@ public class RunningRace {
             int playerIndex = player.get(str);
             String frontPlayer = indexMap.get(playerIndex - 1);
             player.put(str, playerIndex-1);
-            player.put(frontPlayer, player.get(frontPlayer) + 1);
+            player.put(frontPlayer, playerIndex);
+            indexMap.put(playerIndex-1, str);
+            indexMap.put(playerIndex, frontPlayer);
         }
 
         for (String str : player.keySet()) answer[player.get(str)] = str;
 
         System.out.println(Arrays.toString(answer));
 
-    }
-
-    private static void settingQueue(String str, Queue<String> queue) {
-        for (int i = 0; i < queue.size(); i++) {
-            String player = queue.poll();
-            if (str.equals(queue.peek())) {
-                String nextPlayer = queue.poll();
-                queue.add(nextPlayer);
-                queue.add(player);
-                i++;
-            } else {
-                queue.add(player);
-            }
-        }
-    }
-
-    private static void settingPosition(Position callPosition, Position frontPosition, Position beforePosition) {
-        String callPositionBeforePlayer = "";
-
-        if (callPosition != null) {
-            callPositionBeforePlayer = callPosition.getBeforePlayer();
-            callPosition.setIndex(callPosition.getIndex() - 1);
-
-            if (callPosition != null) {
-                callPosition.setFrontPlayer(frontPosition.getFrontPlayer());
-                callPosition.setBeforePlayer(frontPosition.getPlayer());
-            }
-        }
-
-        if (frontPosition != null) {
-            frontPosition.setIndex(frontPosition.getIndex() + 1);
-            if (callPosition != null) frontPosition.setFrontPlayer(callPosition.getPlayer());
-            frontPosition.setBeforePlayer(callPositionBeforePlayer);
-        }
-
-        if (beforePosition != null && frontPosition != null) beforePosition.setFrontPlayer(frontPosition.getPlayer());
-    }
-
-    public static class Position {
-        private int index;
-
-        private String player;
-        private String frontPlayer;
-        private String beforePlayer;
-
-        public Position(int index, String player, String frontPlayer, String beforePlayer) {
-            this.index = index;
-            this.player = player;
-            this.frontPlayer = frontPlayer;
-            this.beforePlayer = beforePlayer;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public String getPlayer() {
-            return player;
-        }
-
-        public String getFrontPlayer() {
-            return frontPlayer;
-        }
-
-        public String getBeforePlayer() {
-            return beforePlayer;
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public void setPlayer(String player) {
-            this.player = player;
-        }
-
-        public void setFrontPlayer(String frontPlayer) {
-            this.frontPlayer = frontPlayer;
-        }
-
-        public void setBeforePlayer(String beforePlayer) {
-            this.beforePlayer = beforePlayer;
-        }
     }
 }
