@@ -78,9 +78,7 @@ public class FineSquare {
         /* TC 8 result : 8 */
         int w = 5;
         int h = 3;
-        BigInteger b1 = BigInteger.valueOf(w);
-        BigInteger b2 = BigInteger.valueOf(h);
-        long a = b1.gcd(b2).longValue();
+
         System.out.println(((long)w * h) - ((long)w + h - gcd(w, h)));
     }
 
