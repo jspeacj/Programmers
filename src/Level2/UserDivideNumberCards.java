@@ -1,9 +1,5 @@
 package Level2;
 
-import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 public class UserDivideNumberCards {
     public static void main(String[] args) {
         /*
@@ -54,26 +50,53 @@ public class UserDivideNumberCards {
         /*
           규칙 :
           1.철수와 영희가 가진 각 카드들의 최대 공약수를 따로 따로 구한다.
-          2.구한 최대 공약수의 약수를 각각 구한다.
-          3.우선순위 큐(내림차순으로 설정한)에다가 해당 약수를 집어넣는다.
-            (이떄 이미 동일한 큰 값이 존재할 경우, 해당 값은 철수와 영희 카드뭉치에서 둘다 나누어지는 숫자이므로 우선순위 큐에서 뽑아낸다.)
-          4.우선순위 큐를 반환한다. (반환한 값이 없을 경우 0을 반환한다.)
+          2. 각 구한 최대 공약수(gcdA, gcdB)를 다른 사람의 카드 뭉치(배열)로 나눠지는지 검토한다.
+          3. 2번 수행에서 나누어지는 경우의 수가 존재하지 않을 경우, 조건에 만족하는 최대 값이므로 해당 값이 해당 사람의 최대 양의 정수 a이다.
+          4. 철수와 영희를 각 기준으로 2번 케이스를 수행하고 큰 값을 반환한다.
+          (최대 공약수의 약수를 기준으로 수행하는 것이 아닌,
+          최대 공약수만 가지고 검토하는 이유는 해당 최대 공약수로 나누어 떨어지는 경우일 경우,
+           해당 최대 공약수의 약수로도 당연히 나누어 떨이지기 때문에 체크할 필요가 없다.)
         * */
 
-        PriorityQueue pq = new PriorityQueue(Comparator.reverseOrder());
+        /* TC 1 result 0 */
+        //int[] arrayA = {10, 17};
+        //int[] arrayB = {5, 20};
 
+        /* TC 2 result 10 */
+        //int[] arrayA = {10, 20};
+        //int[] arrayB = {5, 17};
 
+        /* TC 3 result 7 */
+        int[] arrayA = {14, 35, 119};
+        int[] arrayB = {18, 30, 102};
 
+        long gcdA = arrayA[0], gcdB = arrayB[0];
+
+        for (int i = 0; i < arrayA.length-1; i++) {
+            gcdA = gcd(gcdA, arrayA[i+1]);
+            gcdB = gcd(gcdB, arrayB[i+1]);
+        }
+
+        System.out.println(Math.max(checkMeasure(gcdA, arrayB), checkMeasure(gcdB, arrayA)));
     }
 
-    private static int gcd(int a, int b) {
-        int r = a % b;
+    private static int checkMeasure(long gcd, int[] array) {
+        boolean checkFlag = true;
+
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] % gcd == 0) {
+                checkFlag = false;
+                break;
+            }
+        }
+
+        if (checkFlag) return (int)gcd;
+        else return 0;
+    }
+
+    private static long gcd(long a, long b) {
+        long r = a % b;
         if (r == 0) return b;
         else return gcd(b, r);
-    }
-    private static void getMeasure(long l1) {
-        for (int i = 2; i <= l1; i++) {
-            if (l1 % i == 0) System.out.println(i);
-        }
     }
 }
