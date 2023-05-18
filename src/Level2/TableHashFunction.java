@@ -1,9 +1,7 @@
 package Level2;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 public class TableHashFunction {
     public static void main(String[] args) {
@@ -56,30 +54,8 @@ public class TableHashFunction {
                      0   x   0   => 0
                     0000 x  0100 => 0100(4)
         * */
-        //삭제 시작
-        int[][] check = {{4, 2, 9}, {2, 2, 6}, {1, 5, 10}, {3, 8, 3}};
 
-        System.out.println("ㅡㅡㅡ이전ㅡㅡㅡ");
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[0].length; j++) {
-                System.out.print(" " + data[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-
-        for (int i = 0; i < check.length; i++) {
-            for (int j = 0; j < check[0].length; j++) {
-                System.out.print(" " + check[i][j] + " ");
-            }
-            System.out.println();
-        }
-        //삭제 종료
-
-        List<Integer> list = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-
+        int answer = 0;
         Comparator<int[]> comp = (o1, o2) -> {
             if (o1[col-1] - o2[col-1] == 0) {
                 return o2[0] - o1[0];
@@ -90,54 +66,15 @@ public class TableHashFunction {
 
         Arrays.sort(data, comp);
 
-        System.out.println("ㅡㅡㅡ이후ㅡㅡㅡ");
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[0].length; j++) {
-                System.out.print(" " + data[i][j] + " ");
-            }
-            System.out.println();
-        }
-
         for (int i = row_begin - 1; i <= row_end - 1; i++) {
             int sum = 0;
             for (int j = 0; j < data[i].length; j++) {
                 sum += (data[i][j] % (i+1));
             }
 
-            list.add(sum);
+            answer = answer ^ sum;
         }
 
-        System.out.println(list);
-        System.out.println(Integer.toBinaryString(4));
-        System.out.println(Integer.parseInt("100", 2));
-
-        if (list.size() > 1) {
-            for (int num : list) {
-                String str = Integer.toBinaryString(num);
-                if (sb.length() == 0) {
-                    sb.append(str);
-                } else {
-                    setHash(sb, str);
-                }
-            }
-
-            System.out.println(Integer.parseInt(sb.toString(), 2));
-        } else {
-            System.out.println(list.get(0));
-        }
-    }
-
-    private static void setHash(StringBuilder sb, String str) {
-        char[] sbArray = sb.toString().toCharArray();
-        char[] strArray = str.toCharArray();
-
-        if (sbArray.length > strArray.length) {
-            strArray = Arrays.copyOf(strArray, sbArray.length);
-        } else {
-            sbArray = Arrays.copyOf(sbArray, strArray.length);
-        }
-
-        System.out.println("sbArray : " + Arrays.toString(sbArray));
-        System.out.println("strArray : " + Arrays.toString(strArray));
+        System.out.println(answer);
     }
 }
