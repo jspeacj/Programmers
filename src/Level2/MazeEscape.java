@@ -61,10 +61,10 @@ public class MazeEscape {
          */
 
         /* TC 1 result : 16 */
-        String[] maps = {"SOOOL","XXXXO","OOOOO","OXXXX","OOOOE"};
+        //String[] maps = {"SOOOL","XXXXO","OOOOO","OXXXX","OOOOE"};
 
         /* TC 2 result : -1 */
-        //String[] maps = {"LOOXS","OOOOX","OOOOO","OOOOO","EOOOO"};
+        String[] maps = {"LOOXS","OOOOX","OOOOO","OOOOO","EOOOO"};
 
         /*
             알고리즘 순서 :
@@ -101,12 +101,15 @@ public class MazeEscape {
         }
 
         int distanceL = dijkstra(queue, maze, "L");
+        if (distanceL == Integer.MAX_VALUE) System.out.println(-1);
 
         check = new boolean[maps.length][maps[0].length()];
+        queue.add(new Node(locationL[0], locationL[1], distanceL));
 
         int distanceE = dijkstra(queue, maze, "E");
 
-        System.out.println(distanceL + distanceE > 0 ? distanceL + distanceE : -1);
+        if (distanceE == Integer.MAX_VALUE) System.out.println(-1);
+        else System.out.println(distanceE);
     }
 
     private static int dijkstra(Queue<Node> queue, String[][] maze, String destination) {
@@ -116,7 +119,6 @@ public class MazeEscape {
 
             if (findDestination(queue, node, maze, destination)) {
                 distance = (node.getDistance() + 1) < distance ? node.getDistance() + 1 : distance;
-                break;
             }
         }
 
@@ -124,10 +126,55 @@ public class MazeEscape {
     }
 
     private static boolean findDestination(Queue<Node> queue, Node node, String[][] maze, String destination) {
+        boolean findLocation = false;
         int row = node.getRow();
         int col = node.getCol();
 
+        if (row + 1 < maze.length && !check[row+1][col] && !"X".equals(maze[row+1][col])) {
+            if(destination.equals(maze[row+1][col])) {
+                findLocation = true;
+                locationL[0] = row + 1;
+                locationL[1] = col;
+            } else {
+                queue.add(new Node(row+1, col, node.getDistance() + 1));
+                check[row+1][col] = true;
+            }
+        }
 
+        if (row - 1 > -1 && !check[row-1][col] && !"X".equals(maze[row-1][col])) {
+            if(destination.equals(maze[row-1][col])) {
+                findLocation = true;
+                locationL[0] = row - 1;
+                locationL[1] = col;
+            } else {
+                queue.add(new Node(row-1, col, node.getDistance() + 1));
+                check[row-1][col] = true;
+            }
+        }
+
+        if (col + 1 < maze[row].length && !check[row][col+1] && !"X".equals(maze[row][col+1])) {
+            if(destination.equals(maze[row][col+1])) {
+                findLocation = true;
+                locationL[0] = row;
+                locationL[1] = col + 1;
+            } else {
+                queue.add(new Node(row, col+1, node.getDistance() + 1));
+                check[row][col+1] = true;
+            }
+        }
+
+        if (col - 1 > -1 && !check[row][col-1] && !"X".equals(maze[row][col-1])) {
+            if(destination.equals(maze[row][col-1])) {
+                findLocation = true;
+                locationL[0] = row;
+                locationL[1] = col - 1;
+            } else {
+                queue.add(new Node(row, col-1, node.getDistance() + 1));
+                check[row][col-1] = true;
+            }
+        }
+
+        return findLocation;
     }
 
     public static class Node {
