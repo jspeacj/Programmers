@@ -1,9 +1,11 @@
 package Level2;
 
+import java.util.Arrays;
+
 public class SeesawPartner {
     public static void main(String[] args) {
         /*
-            시소 짝꿍
+            시소 짝꿍 (다른 사람 풀이 참고함.. 아직 이해 못해서 한번 더 풀이하기)
 
             문제 설명
 
@@ -35,23 +37,37 @@ public class SeesawPartner {
         int[] weights = {100,180,360,100,270};
 
         long answer = 0;
-        for (int i = 0; i < weights.length; i++) {
-            for (int j = i+1; j < weights.length; j++) {
-                long gcd = gcd(weights[i], weights[j]);
-                if (weights[i] / gcd <= 4 && weights[j] / gcd <= 4) answer++;
+        int len = weights.length;
+        Arrays.sort(weights);
+        int prev = 0;
+        for (int i = 0; i < len - 1; i++) {
+            if (i > 0 && weights[i] == weights[i-1]) {
+                prev--;
+                answer += prev;
+                continue;
             }
+
+            prev = 0;
+            for (int j = findRight(weights, weights[i], len, i); j > i; j--) {
+                if (weights[i] == weights[j] || weights[i] * 2 == weights[j]
+                        || weights[i] * 3 == weights[j] * 2 || weights[i] * 4 == weights[j] * 3) {
+                    prev++;
+                }
+            }
+            answer += prev;
         }
 
         System.out.println(answer);
     }
 
-    public static long gcd(long a, long b) {
-        long r = a % b;
-        if (r == 0) return b;
-        else return gcd(b, r);
-    }
-
-    public static long lcm(long a, long b) {
-        return a * b / gcd(a, b);
+    private static int findRight(int[] weights, int num, int len, int i) {
+        int left = i;
+        int right = len - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if(weights[mid] > num * 2) return mid;
+            else left = mid + 1;
+        }
+        return left;
     }
 }
