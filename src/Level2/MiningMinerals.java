@@ -59,12 +59,12 @@ public class MiningMinerals {
          */
 
         /* TC 1 result : 12 */
-        int[] picks = {1, 3, 2};
-        String[] minerals = {"diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"};
+        //int[] picks = {1, 3, 2};
+        //String[] minerals = {"diamond", "diamond", "diamond", "iron", "iron", "diamond", "iron", "stone"};
 
         /* TC 2 result : 50 */
-        //int[] picks = {0, 1, 1};
-        //String[] minerals = {"diamond", "diamond", "diamond", "diamond", "diamond", "iron", "iron", "iron", "iron", "iron", "diamond"};
+        int[] picks = {0, 1, 1};
+        String[] minerals = {"diamond", "diamond", "diamond", "diamond", "diamond", "iron", "iron", "iron", "iron", "iron", "diamond"};
 
         /*
           알고리즘 풀이 순서
@@ -72,32 +72,94 @@ public class MiningMinerals {
            2. 5개씩 묶을 떄, 숫자로 변경한다. (다이아 : 25, 철 : 5, 돌 : 1)
 
            최소한의 피로도를 구하는 방법
-            1. 곡괭이를 모두 써도 광물이 남을 경우 => 순차적으로 광물을 캐야한다.
-            2. 곡괭이를 모두 쓰기도 전에 광물을 다 캘 수 있을 경우 =>
+            1. 곡괭이와 광물을 숫자로 치환한 뒤, 각 단계마다 소모 피로도가 최소인 경우를 찾는다.
         */
 
-        Queue<String> queue = new LinkedList<>();
-        int index = 0;
+        /*
+             다이아 곡괭이 : 25 * 5 = 125, 철 곡괭이 : 5 : 5 = 25, 돌 곡괭이 1 * 5 = 5
+             diamond(25) + diamond(25) + diamond(25) + iron(1) + iron(1) = 77 :
+             77 / 25 : 3(2) = 5 => 다이아 곡괭이로 광물을 캘 시 소모 피로도
+             77 /  5 : 15(2) = 17 => 철 곡괭이로 광물을 캘 시 소모 피로도
+             77 /  1 : 77 => 돌 곡괭이로 광물을 캘 시 소모 피로도
+         */
 
-        for (int i = 0; i < minerals.length; i++) {
-            if (i == minerals.length -1) {
-                queue.add(minerals[i]);
-                System.out.println(queue);
-                break;
-            }
-
-            if (index < 5) {
-                index++;
-                queue.add(minerals[i]);
-                continue;
-            }
-
-            if (index == 5) {
-                System.out.println(queue);
-                index = 0;
-                i--;
-                queue.clear();
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < minerals.length; i += 5) {
+            System.out.println("i : " + i);
+            if (i + 5 >= minerals.length) {
+                queue.add(checkMinerals(minerals, i, minerals.length));
+            } else {
+                queue.add(checkMinerals(minerals, i, i+5));
             }
         }
+
+        System.out.println(mineMinerals(picks, queue));
+    }
+
+    private static int mineMinerals(int[] picks, Queue<int[]> queue) {
+        int fatigue = 0;
+
+        while (!queue.isEmpty()) {
+            if (picks[0] == 0 && picks[1] == 0 && picks[2] == 0) break;
+            int index = 0;
+            int stamina = Integer.MAX_VALUE;
+            int[] mineral = queue.poll();
+
+            if (picks[0] > 0) {
+                int mine = 5;
+                if (stamina >= mine) {
+                    stamina = mine;
+                    index = 0;
+                }
+            }
+
+            if (picks[1] > 0) {
+                int mine = (int)(Math.ceil(mineral[0] / 5.0));
+                if (stamina >= mine) {
+                    stamina = mine;
+                    index = 1;
+                }
+            }
+
+            if (picks[2] > 0) {
+                if (stamina >= mineral[0]) {
+                    stamina = mineral[0];
+                    index = 2;
+                }
+
+            }
+
+            picks[index]--;
+            fatigue += stamina;
+        }
+
+        return fatigue;
+    }
+
+    private static int[] checkMinerals(String[] minerals, int startIndex, int lastIndex) {
+        int[] arr = new int[2];
+        for (int i = startIndex; i < lastIndex; i++) {
+            arr[1]++;
+            switch (minerals[i]) {
+                case "diamond" :
+                    arr[0] += 25;
+                    break;
+                case "iron" :
+                    arr[0] += 5;
+                    break;
+                default :
+                    arr[0] += 1;
+                    break;
+            }
+        }
+
+        return arr;
+    }
+
+    private static boolean checkPick(int[] picks, String[] minerals) {
+        int pickSize = picks.length;
+        int mineralsSize = minerals.length;
+        if (pickSize * 5  >= mineralsSize) return true;
+        else return false;
     }
 }
