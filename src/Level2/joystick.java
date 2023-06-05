@@ -1,9 +1,11 @@
 package Level2;
 
-import java.util.Arrays;
-
 public class joystick {
     private static int MIDDLE = 78; // N
+    private static int answer = Integer.MAX_VALUE;
+    private static char[] nameChar;
+    private static char[] answerChar;
+    private static boolean[] visited;
     public static void main(String[] args) {
         /*
             조이스틱
@@ -43,7 +45,11 @@ public class joystick {
 
         /*
           ※ 문제 핵심 파악하기
-
+            1. 주의해야하는 경우의 수 :
+             =>한쪽방향으로만 가는 것이 아닌 중간에 반대편으로 가는게 더 빠를 경우
+            (ex. EFAAAAAAZ : 오른쪽방향으로 한칸이동한뒤 왼쪽으로 이동해서 끝자락으로 이동한다.)
+            => 구현하는 방법 : 반대방향으로 이동하는 경우 다시 원래방향으로 돌아가는 경우를 방지하기 위하여,
+               boolean타입 flag를 선언하여 true일 경우 해당 방향으로만 이동하도록 구현한다. (무한루프 방지)
 
         * */
         /* TC 1 return : 56 */
@@ -51,26 +57,51 @@ public class joystick {
 
         /* TC 2 return : 23 */
         //String name = "JAN";
+        //EROENJEROEN
 
-        StringBuilder reverseName = new StringBuilder();
-        reverseName.append(name.charAt(0));
-        for (int i = name.length() - 1; i > 0; i--) {
-            reverseName.append(name.charAt(i));
-        }
+        nameChar = name.toCharArray();;
+        answerChar = new char[nameChar.length];
+        visited = new boolean[nameChar.length];
 
-        int rightCursor = selectName(name.toCharArray());
-        int leftCursor = selectName(reverseName.toString().toCharArray());
-        System.out.println(Math.min(leftCursor, rightCursor));
+        dfs(name, 0, false, 0);
+        System.out.println(answer);
     }
 
-    private static int selectName(char[] chars) {
-        int cnt = 0;
-        System.out.println("A : " + (int)'A');
-        for (int i = 0; i < chars.length; i++) {
-            System.out.println("이전 cnt : " + cnt);
-            System.out.println(chars[i] + " : " + (int)chars[i] + ", MIDDLE : " + MIDDLE + ", " + ((int)chars[i] > MIDDLE));
-            if ((int)chars[i] > MIDDLE) {
-                /*
+    public static void dfs(String name, int cnt, boolean flag, int reverseIndex) {
+        if (flag) {
+            for (int i = reverseIndex; i >= 0; i--) {
+                if (visited[i]) {
+                    cnt++;
+                    continue;
+                }
+
+                visited[i] = true;
+                cnt++;
+                dfs(name, cnt, true, --reverseIndex);
+                cnt--;
+                visited[i] = false;
+            }
+        } else {
+            for (int i = 0; i < nameChar.length; i++) {
+                if (visited[i]) {
+                    cnt++;
+                    continue;
+                }
+
+                visited[i] = true;
+                cnt++;
+                reverseIndex = i - 1 < 0 ?
+                dfs(name, cnt, true, reverseIndex);
+                dfs(name, cnt, false, reverseIndex);
+                cnt--;
+                visited[i] = false;
+
+            }
+        }
+
+    }
+
+    /*
                  A B C D
                  E F G H
                  I J K L
@@ -79,17 +110,15 @@ public class joystick {
                  U V W X
                  Y Z
                 * */
-                System.out.println((int)'Z' - (int)chars[i] + 1);
-                cnt += (int)'Z' - (int)chars[i] + 1;
-            } else {
-                System.out.println((int)chars[i] - (int)'A');
-                cnt += (int)chars[i] - (int)'A';
-            }
-            System.out.println("이후 cnt : " + cnt);
-            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        }
 
-        System.out.println(cnt);
+    private static int selectName(char c) {
+        int cnt = 0;
+            if ((int)c > MIDDLE) {
+                cnt += (int)'Z' - (int)c + 1;
+            } else {
+                cnt += (int)c - (int)'A';
+            }
+
         return cnt;
     }
 }
