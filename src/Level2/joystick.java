@@ -1,11 +1,12 @@
 package Level2;
 
+import java.util.Arrays;
 public class joystick {
-    private static int MIDDLE = 78; // N
+    private static char MIDDLE_ALPHABET = 'N';
+    private static String finalName;
     private static int answer = Integer.MAX_VALUE;
-    private static char[] nameChar;
-    private static char[] answerChar;
-    private static boolean[] visited;
+    private static StringBuilder sb = new StringBuilder();
+    private static char[] lMoveChar;
     public static void main(String[] args) {
         /*
             조이스틱
@@ -45,80 +46,135 @@ public class joystick {
 
         /*
           ※ 문제 핵심 파악하기
-            1. 주의해야하는 경우의 수 :
-             =>한쪽방향으로만 가는 것이 아닌 중간에 반대편으로 가는게 더 빠를 경우
-            (ex. EFAAAAAAZ : 오른쪽방향으로 한칸이동한뒤 왼쪽으로 이동해서 끝자락으로 이동한다.)
-            => 구현하는 방법 : 반대방향으로 이동하는 경우 다시 원래방향으로 돌아가는 경우를 방지하기 위하여,
-               boolean타입 flag를 선언하여 true일 경우 해당 방향으로만 이동하도록 구현한다. (무한루프 방지)
+            알고리즘 풀이 :
+             1. 오른쪽으로 커서를 이동한다.
+             2. 이동한 자리의 문자를 주어진 문자에 맞게 맞춘다.
+             3. 해당 위치를 기준으로 왼쪽으로 커서를 계속 이동해서 주어진 name에 맞을떄까지 커서를 이동하며 이름을 바꾼다.
+             4. 1번 케이스를 통해 name과 동일해질떄까지 1 ~ 3번 케이스를 반복한다.
 
         * */
         /* TC 1 return : 56 */
-        String name = "JEROEN";
+        //String name = "JEROEN";
 
         /* TC 2 return : 23 */
         //String name = "JAN";
-        //EROENJEROEN
 
-        nameChar = name.toCharArray();;
-        answerChar = new char[nameChar.length];
-        visited = new boolean[nameChar.length];
+        /* TC 3 return : 11 */
+        //String name = "JAZ";
 
-        dfs(name, 0, false, 0);
-        System.out.println(answer);
-    }
+        /* TC 4 return :  10 */
+        //String name = "ABABAAAAABA";
 
-    public static void dfs(String name, int cnt, boolean flag, int reverseIndex) {
-        if (flag) {
-            for (int i = reverseIndex; i >= 0; i--) {
-                if (visited[i]) {
-                    cnt++;
-                    continue;
-                }
-
-                visited[i] = true;
-                cnt++;
-                dfs(name, cnt, true, --reverseIndex);
-                cnt--;
-                visited[i] = false;
-            }
-        } else {
-            for (int i = 0; i < nameChar.length; i++) {
-                if (visited[i]) {
-                    cnt++;
-                    continue;
-                }
-
-                visited[i] = true;
-                cnt++;
-                reverseIndex = i - 1 < 0 ?
-                dfs(name, cnt, true, reverseIndex);
-                dfs(name, cnt, false, reverseIndex);
-                cnt--;
-                visited[i] = false;
-
-            }
-        }
-
-    }
-
-    /*
+        /* TC 5 return : 12 */
+        String name = "BBBBAAAABA";
+        /*
                  A B C D
                  E F G H
                  I J K L
                  M N O P
                  Q R S T
                  U V W X
-                 Y Z
-                * */
+                 Y Z 11 +
+        */
 
-    private static int selectName(char c) {
-        int cnt = 0;
-            if ((int)c > MIDDLE) {
-                cnt += (int)'Z' - (int)c + 1;
-            } else {
-                cnt += (int)c - (int)'A';
+        finalName = name;
+        char[] nickName = new char[finalName.length()];
+        char[] nameChar = name.toCharArray();
+        lMoveChar = new char[name.length()];
+
+        Arrays.fill(nickName, 'A');
+        leftDfs(nameChar, nickName, 0, 0);
+        Arrays.fill(nickName, 'A');
+        rightDfs(nameChar, nickName, 0, 0);
+        System.out.println(answer);
+    }
+
+    public static void leftDfs(char[] nameChar, char[] nickName, int index, int cnt) {
+        if (index < 0) index = nameChar.length - 1;
+
+        if ((int)nameChar[index] < (int)MIDDLE_ALPHABET) {
+            cnt += (int)nameChar[index] - (int)'A';
+        } else {
+            cnt += (int)'Z' - (int)nameChar[index] + 1;
+        }
+        nickName[index] = nameChar[index];
+
+        if (checkName(nickName)) {
+            if (answer > cnt) answer = cnt;
+            return;
+        } else {
+            rightMove(nameChar, nickName, index, cnt);
+            leftDfs(nameChar, nickName, index - 1, ++cnt);
+        }
+    }
+
+    public static void rightDfs(char[] nameChar, char[] nickName, int index, int cnt) {
+        if ((int)nameChar[index] < (int)MIDDLE_ALPHABET) {
+            cnt += (int)nameChar[index] - (int)'A';
+        } else {
+            cnt += (int)'Z' - (int)nameChar[index] + 1;
+        }
+        nickName[index] = nameChar[index];
+
+        if (checkName(nickName)) {
+            if (answer > cnt) answer = cnt;
+            return;
+        } else {
+            leftMove(nameChar, nickName, index, cnt);
+            rightDfs(nameChar, nickName, index + 1, ++cnt);
+        }
+    }
+
+    public static boolean checkName(char[] nickName) {
+        sb.setLength(0);
+        for(char c : nickName) sb.append(c);
+
+        return finalName.equals(sb.toString());
+    }
+
+    public static void leftMove(char[] nameChar, char[] nickName, int startIndex, int cnt) {
+        for (int i = 0; i < nickName.length; i++) lMoveChar[i] = nickName[i];
+        while (true) {
+            cnt++;
+            startIndex = startIndex > 0 ? --startIndex : (nameChar.length - 1);
+
+            if (lMoveChar[startIndex] != nameChar[startIndex]) {
+                if ((int) nameChar[startIndex] < (int) MIDDLE_ALPHABET) {
+                    cnt += (int) nameChar[startIndex] - (int) 'A';
+                } else {
+                    cnt += (int) 'Z' - (int) nameChar[startIndex] + 1;
+                }
+
+                lMoveChar[startIndex] = nameChar[startIndex];
             }
 
-        return cnt;
+            if(checkName(lMoveChar)) {
+                if (answer > cnt) answer = cnt;
+                break;
+            }
+        }
+    }
+
+    public static void rightMove(char[] nameChar, char[] nickName, int startIndex, int cnt) {
+        for (int i = 0; i < nickName.length; i++) lMoveChar[i] = nickName[i];
+        while (true) {
+            cnt++;
+            startIndex = startIndex < (nameChar.length - 1) ? ++startIndex : 0;
+
+            if (lMoveChar[startIndex] != nameChar[startIndex]) {
+                if ((int) nameChar[startIndex] < (int) MIDDLE_ALPHABET) {
+                    cnt += (int) nameChar[startIndex] - (int) 'A';
+                } else {
+                    cnt += (int) 'Z' - (int) nameChar[startIndex] + 1;
+                }
+
+                lMoveChar[startIndex] = nameChar[startIndex];
+            }
+
+            if(checkName(lMoveChar)) {
+                if (answer > cnt) answer = cnt;
+                break;
+            }
+        }
     }
 }
