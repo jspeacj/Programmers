@@ -31,8 +31,8 @@ public class IntegerPairsBetweenTwoCircles {
         //int r2 = 3;
 
         /* TC 2 result : 40 */
-        int r1 = 2;
-        int r2 = 4;
+        //int r1 = 2;
+        //int r2 = 4;
 
         /* TC 3 result : 1008 */
         //int r1 = 9;
@@ -43,8 +43,8 @@ public class IntegerPairsBetweenTwoCircles {
         //int r2 = 20;
 
         /* TC 5 result : 6281440 */
-        //int r1 = 999999;
-        //int r2 = 1000000;
+        int r1 = 999999;
+        int r2 = 1000000;
 
         /* 문제에서 공식 찾기
           1. 1사분면을 기준으로 x축과 y축이 정수인 점의 개수를 구한다.
@@ -53,9 +53,23 @@ public class IntegerPairsBetweenTwoCircles {
         */
 
         long answer = 0;
-        answer += 4;
-        int y = (int)Math.sqrt(10);
-        System.out.println(y);
+        long r1x = (long)Math.pow(r1,2);
+        long r2x = (long)Math.pow(r2,2);
+        long side = 0;
+
+        for(long i=0;i<=r2;i++){
+            long y2 = (long)Math.sqrt(r2x-(long)Math.pow(i,2));
+            long y1 = (long)Math.sqrt(r1x-(long)Math.pow(i,2));
+
+            if(Math.sqrt((r1x-Math.pow(i,2)))%1==0){
+                side++;
+            }
+
+            answer += (y2-y1) * 4;
+        }
+
+        answer += side * 4 - 4;
+
         System.out.println(answer);
 
     }
