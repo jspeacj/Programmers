@@ -1,5 +1,9 @@
 package Level2;
 
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
 public class WorkingAssignment {
     public static void main(String[] args) {
         /*
@@ -69,14 +73,95 @@ public class WorkingAssignment {
          */
 
         /* TC 1 result : ["korean", "english", "math"] */
-        String[][] plans = {{"korean", "11:40", "30"}, {"english", "12:10", "20"}, {"math", "12:30", "40"}};
+        //String[][] plans = {{"korean", "11:40", "30"}, {"english", "12:10", "20"}, {"math", "12:30", "40"}};
 
         /* TC 2 result : ["science", "history", "computer", "music"] */
-        //String[][] plans = {{"science", "12:40", "50"}, {"music", "12:20", "40"}, {"history", "14:00", "30"}, {"computer", "12:30", "100"}};
+        String[][] plans = {{"science", "12:40", "50"}, {"music", "12:20", "40"}, {"history", "14:00", "30"}, {"computer", "12:30", "100"}};
 
         /* TC 3 result : ["bbb", "ccc", "aaa"] */
         //String[][] plans = {{"aaa", "12:00", "20"}, {"bbb", "12:10", "30"}, {"ccc", "12:40", "10"}};
 
+        /*
+            문제 규칙 이해하기 및 적용해야할 알고리즘 및 로직 판단하기
+            1. 배열은 정렬되어 있지 않다.
+            => 우선순위 큐(Priority Queue)를 이용하여 시간을 기준으로 오름차순으로 배열이 자동 정렬되도록 지정한다.
 
+            2. 새로운 과제가 시작이 되었을 떄, 기존에 했던건 멈추고 새로운 과제를 시작한다.
+            => 우선순위 큐에서 peek()함수를 이용하여 다음 과제의 시간을 알아낸 뒤,
+            다음 과제의 시간이 현재 과제에 걸리는 시간보다 작을 경우(현재 과제 수행하는 시간보다 새로운 과제를 해야하는 시간이 먼저 올 경우)
+            현재 과제 배열 playtime 남은 시간으로 변경한 뒤 미리 선언해둔 대기(Wait) 큐(Queue) 에다가 집어 넣은 후 다음 과제를 시작한다.
+            (멈춰둔 과제가 여러 개일 경우, 가장 최근에 멈춘 과제(가장 마지막으로 담아둔 과제)부터 시작해야하기 떄문에 큐로 선언)
+
+            3. 만약, 과제를 끝낸 시각에 새로 시작해야 되는 과제와 잠시 멈춰둔 과제가 모두 있다면, 새로 시작해야 하는 과제부터 진행한다.
+            => 위 2번 케이스에 해당하지 않아서 다음 과제가 시작하기 전에 현재 과제를 모두 끝냈을 때 아래와 같이 수행한다.
+            1. 만약 다음 과제가 존재할 경우, 다음 과제를 먼저 수행한다. (멈춰둔 과제는 신경 X)
+            2. 다음 과제가 없고 멈춰둔 과제가 있을 경우, 멈춰둔 과제를 수행한다.
+        */
+
+        String[] answer = new String[plans.length];
+        Stack<String[]> stack = new Stack<>();
+        PriorityQueue<String[]> pq = new PriorityQueue<>((s1, s2) -> Integer.parseInt(s1[1].substring(0, 2) +s1[1].substring(3, 5)) - Integer.parseInt(s2[1].substring(0, 2) +s2[1].substring(3, 5)));
+        for (String[] arr : plans) pq.add(arr);
+
+        // 과제 수행
+        doNewAssignment(pq, stack, answer);
+        System.out.println(Arrays.toString(answer));
+    }
+
+    public static void doNewAssignment (PriorityQueue<String[]> pq, Stack<String[]> stack, String[] answer) {
+        int answerIndex = 0;
+        while (!pq.isEmpty()) {
+            String[] assignment = pq.poll();
+            int startTime = Integer.parseInt(assignment[1].substring(0,2) + assignment[1].substring(3,5));
+            int takeTime = Integer.parseInt(assignment[2]);
+            int finishTime = 0;
+            if ((startTime + takeTime) % 100 >= 60) {
+                finishTime = startTime + takeTime + 40;
+            } else {
+                finishTime = startTime + takeTime;
+            }
+
+            if (pq.peek() != null) { // 다음 과제가 존재할 경우
+                String[] nextAssignment = pq.peek();
+                int nextStartTime = Integer.parseInt(nextAssignment[1].substring(0,2) + nextAssignment[1].substring(3,5));
+                if (finishTime > nextStartTime) { //현재 과제를 끝내기도 전에 다음 과제를 시작해야하는 경우
+                    int leftTime = finishTime - nextStartTime; // 남은 시간
+                    assignment[2] = String.valueOf(leftTime); // 남은 시간 현재 과제에다가 세팅
+                    stack.add(assignment); // 대기 큐에다가 추가해둔 뒤 다음 과제 수행
+                    continue;
+                } else { // 현재 과제가 먼저 끝났을 경우
+                    answer[answerIndex++] = assignment[0];
+                    while (!stack.isEmpty()) { // 다음 과제까지 시간이 남아있는데, 미뤄둔 과제가 있을 경우 해당 시간까지 수행
+                        String[] leftassignment = stack.pop();
+                        int leftTakeTime = Integer.parseInt(leftassignment[2]);
+                        int sumTime = 0;
+                        if ((finishTime + leftTakeTime) % 100 >= 60) {
+                            sumTime = finishTime + leftTakeTime + 40;
+                        } else {
+                            sumTime = finishTime + leftTakeTime;
+                        }
+
+                        if (sumTime > nextStartTime) { // 남은 과제를 다하기 전에, 다음 과제를 수행해야하는 경우
+                            //if (leftTakeTime % 100 < nextStartTime ) // << 해당 부분 체크 해야함! 뺐을 경우 0보다 작아서 60보다 큰지 검토해야하기 떄문..
+                            leftTakeTime -= (nextStartTime - finishTime);
+                            leftassignment[2] = String.valueOf(leftTakeTime); // 남은 시간으로 과제 시간 변경
+                            stack.add(leftassignment);
+                            break;
+                        } else { // 다음 과제를 수행해야하는 시간 전에 다음 과제를 전부 끝냈을 경우
+                            finishTime = sumTime;
+                            answer[answerIndex++] = leftassignment[0];
+                        }
+
+                        if (finishTime == nextStartTime) break;
+                    }
+                }
+            } else { // 다음 과제가 존재하지 않을 경우
+                answer[answerIndex++] = assignment[0];
+                // 나머지 과제는 가장 최근에 멈춘 과제부터 수행 (후입선출)
+                while (!stack.isEmpty()) {
+                    answer[answerIndex++] = stack.pop()[0];
+                }
+            }
+        }
     }
 }
