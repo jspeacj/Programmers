@@ -1,5 +1,9 @@
 package Level2;
 
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
 public class WorkingAssignment {
     public static void main(String[] args) {
         /*
@@ -72,7 +76,7 @@ public class WorkingAssignment {
         //String[][] plans = {{"korean", "11:40", "30"}, {"english", "12:10", "20"}, {"math", "12:30", "40"}};
 
         /* TC 2 result : ["science", "history", "computer", "music"] */
-        //String[][] plans = {{"science", "12:40", "50"}, {"music", "12:20", "40"}, {"history", "14:00", "30"}, {"computer", "12:30", "100"}};
+        String[][] plans = {{"science", "12:40", "50"}, {"music", "12:20", "40"}, {"history", "14:00", "30"}, {"computer", "12:30", "100"}};
 
         /* TC 3 result : ["bbb", "ccc", "aaa"] */
         //String[][] plans = {{"aaa", "12:00", "20"}, {"bbb", "12:10", "30"}, {"ccc", "12:40", "10"}};
@@ -81,7 +85,7 @@ public class WorkingAssignment {
         // String[][] plans=  {{"A", "12:00", "30"}, {"B", "12:10", "20"}, {"C", "15:00", "40"}, {"D", "15:10", "30"}};
 
         /* TC 4 result : */
-        String[][] plans= {{"1", "00:00", "30"}, {"2", "00:10", "10"}, {"3", "00:30", "10"}, {"4", "00:50", "10"}};
+        //String[][] plans= {{"1", "00:00", "30"}, {"2", "00:10", "10"}, {"3", "00:30", "10"}, {"4", "00:50", "10"}};
 
         /*
             문제 규칙 이해하기 및 적용해야할 알고리즘 및 로직 판단하기
@@ -100,6 +104,49 @@ public class WorkingAssignment {
             2. 다음 과제가 없고 멈춰둔 과제가 있을 경우, 멈춰둔 과제를 수행한다.
         */
 
+        int index = 0, currentTime = 0;
+        PriorityQueue<homeWork> plan = new PriorityQueue<>((a, b) -> Integer.compare(a.startTime, b.startTime));
+        Stack<homeWork> later = new Stack<>();
 
+        for (String[] arr : plans) plan.add(new homeWork(arr));
+
+        String[] answer = new String[plans.length];
+
+        while (!plan.isEmpty() || !later.isEmpty()) {
+            if (plan.isEmpty()) {
+                // 새 작업이 없을 경우 : 진행중인 작업 하나씩 처리 (현재시간 갱신없이 stack만 비어내면 된다.)
+                answer[index++] = later.pop().subject;
+            } else if (later.isEmpty()) {
+                // 진행중인 작업이 없음 : 새 작업의 시작시간까지 기다린 후 새 작업 시작
+                currentTime = plan.peek().startTime;
+                later.push(plan.poll());
+            } else {
+                // 새 작업과 진행중인 작업이 모두 있을 경우 : 시간 비교 필요
+                if (plan.peek().startTime < currentTime + later.peek().remainTime) {
+                    // 새 작업 시작 전에 진행중인 작업 완료 불가 : 진행 중 작업 잔여시간 갱신 및 새 작업 시작
+                    later.peek().remainTime -= plan.peek().startTime - currentTime;
+                    currentTime = plan.peek().startTime;
+                    later.push(plan.poll());
+                } else {
+                    // 새 작업 시작 전에 진행중인 작업 완료 : 진행중인 작업 완료 및 현재시간 갱신
+                    currentTime += later.peek().remainTime;
+                    answer[index++] = later.pop().subject;
+                }
+            }
+        }
+
+        System.out.println(Arrays.toString(answer));
+    }
+
+    public static class homeWork {
+        String subject;
+        int startTime, remainTime;
+
+        public homeWork(String[] info) {
+            this.subject = info[0];
+            String[] split = info[1].split(":");
+            this.startTime = Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+            this.remainTime = Integer.parseInt(info[2]);
+        }
     }
 }
