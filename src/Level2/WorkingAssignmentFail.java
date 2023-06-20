@@ -1,9 +1,13 @@
 package Level2;
 
-public class WorkingAssignment {
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Stack;
+
+public class WorkingAssignmentFail {
     public static void main(String[] args) {
         /*
-            과제 진행하기(성공 코드... 혼자 구현한 코드로는 66.6점으로 통과 못해서 참고해서 구현한 코드. 실패한 코드는 WorkingAssignmentFail에서 확인하기)
+            과제 진행하기(실패 코드... 올바르게 로직 구현한 것 같지만 점수는 66.6점으로 실패 떠서 통과 못함...)
 
             문제 설명
             과제를 받은 루는 다음과 같은 순서대로 과제를 하려고 계획을 세웠습니다.
@@ -76,7 +80,7 @@ public class WorkingAssignment {
 
         /* TC 3 result : ["bbb", "ccc", "aaa"] */
         //String[][] plans = {{"aaa", "12:00", "20"}, {"bbb", "12:10", "30"}, {"ccc", "12:40", "10"}};
-
+        
         /* TC 4 result : */
         // String[][] plans=  {{"A", "12:00", "30"}, {"B", "12:10", "20"}, {"C", "15:00", "40"}, {"D", "15:10", "30"}};
 
@@ -100,6 +104,77 @@ public class WorkingAssignment {
             2. 다음 과제가 없고 멈춰둔 과제가 있을 경우, 멈춰둔 과제를 수행한다.
         */
 
+        String[] answer = new String[plans.length];
+        Stack<String[]> stack = new Stack<>();
+        PriorityQueue<String[]> pq = new PriorityQueue<>((s1, s2) ->
+                Integer.parseInt(s1[1].substring(0, 2) +s1[1].substring(3, 5)) - Integer.parseInt(s2[1].substring(0, 2) +s2[1].substring(3, 5)));
+        for (String[] arr : plans) pq.add(arr);
 
+        // 과제 수행
+        doNewAssignment(pq, stack, answer);
+        System.out.println(Arrays.toString(answer));
+    }
+
+    public static void doNewAssignment (PriorityQueue<String[]> pq, Stack<String[]> stack, String[] answer) {
+        int answerIndex = 0;
+        while (!pq.isEmpty()) {
+            String[] assignment = pq.poll();
+            int startTime = Integer.parseInt(assignment[1].substring(0,2) + assignment[1].substring(3,5));
+            int takeTime = Integer.parseInt(assignment[2]);
+            int finishTime = addTime(startTime, takeTime);
+
+            if (pq.peek() != null) { // 다음 과제가 존재할 경우
+                String[] nextAssignment = pq.peek();
+                int nextStartTime = Integer.parseInt(nextAssignment[1].substring(0,2) + nextAssignment[1].substring(3,5));
+                if (finishTime > nextStartTime) { //현재 과제를 끝내기도 전에 다음 과제를 시작해야하는 경우
+                    takeTime -= (nextStartTime - startTime); // 남은 시간
+                    assignment[2] = String.valueOf(takeTime); // 남은 시간 현재 과제에다가 세팅
+                    stack.add(assignment); // 대기 큐에다가 추가해둔 뒤 다음 과제 수행
+                    continue;
+                } else { // 현재 과제가 먼저 끝났을 경우
+                    answer[answerIndex++] = assignment[0];
+                    while (!stack.isEmpty()) { // 다음 과제까지 시간이 남아있는데, 미뤄둔 과제가 있을 경우 해당 시간까지 수행
+                        String[] leftassignment = stack.pop();
+                        int leftTakeTime = Integer.parseInt(leftassignment[2]);
+                        int sumTime = addTime(finishTime, leftTakeTime);
+
+                        if (sumTime > nextStartTime) { // 남은 과제를 다하기 전에, 다음 과제를 수행해야하는 경우
+                            leftTakeTime -= (nextStartTime - finishTime);
+                            leftassignment[2] = String.valueOf(leftTakeTime); // 남은 시간으로 과제 시간 변경
+                            stack.add(leftassignment);
+                            break;
+                        } else { // 다음 과제를 수행해야하는 시간 전에 다음 과제를 전부 끝냈을 경우
+                            finishTime = sumTime;
+                            answer[answerIndex++] = leftassignment[0];
+                        }
+
+                        if (finishTime == nextStartTime) break;
+                    }
+                }
+            } else { // 다음 과제가 존재하지 않을 경우
+                answer[answerIndex++] = assignment[0];
+                // 나머지 과제는 가장 최근에 멈춘 과제부터 수행 (후입선출)
+                while (!stack.isEmpty()) {
+                    answer[answerIndex++] = stack.pop()[0];
+                }
+            }
+        }
+    }
+
+    public static int addTime(int startTime, int takeTime) {
+        int finishTime = startTime;
+        while (takeTime > 0) {
+            int hour = finishTime / 100;
+            int minute = finishTime % 100;
+            if (minute + takeTime >= 60) {
+                takeTime -= (60 - minute);
+                finishTime = (hour + 1) * 100;
+            } else {
+                finishTime = finishTime + takeTime;
+                takeTime = 0;
+            }
+        }
+
+        return finishTime;
     }
 }
