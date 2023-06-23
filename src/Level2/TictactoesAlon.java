@@ -1,17 +1,8 @@
 package Level2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class TictactoesAlon {
-    public static String[] nowBoard = new String[3]; // 현재 진행된 게임판
-    public static char nextPlayer = 'O'; // 진행할 순서
-    public static Node[] oNodeArr; // 선공(O) 좌표
-    public static Node[] xNodeArr; // 후공(X) 좌표
-    private static boolean[] ovisit;
-    private static boolean[] xvisit;
-    private static int answer = 0;
+    private static int oCount = 0;
+    private static int xCount = 0;
     public static void main(String[] args) {
         /*
             혼자서 하는 틱택토
@@ -83,7 +74,7 @@ public class TictactoesAlon {
          */
 
         /* TC 1 result : 1 */
-        String[] board = {"O.X", ".O.", "..X"};
+        //String[] board = {"O.X", ".O.", "..X"};
 
         /* TC 2 result : 0 */
         //String[] board = {"OOO", "...", "XXX"};
@@ -94,27 +85,18 @@ public class TictactoesAlon {
         /* TC 4 result : 1 */ 
         //String[] board = {"...", "...", "..."};
 
+        /* TC 5 result : 1 */
+        String[] board = {"OXO", "XOX", "OXO"};
         /*
           정상적으로 틱택토를 했을 때 진행가능한 경우의 수가 하나라도 존재할 경우 1 반환,
           경우의 수가 아예 존재하지 않을 경우 0 반환
 
-          체크해야하는 경우(1) :
-          1. X(후공)이 O(선공)보다 개수가 많을 경우
-          2. O(선공)이 X(후공)보다 개수가 두개 이상 많을 경우
-          3. 반복문을 수행해서 해당 좌표에 O(선공) X(후공)이 존재할 경우, 해당 좌표를 기준으로 가로, 세로, 대각선에 같은 표시가 있는 경우(승리조건)을 찾는다.
-            (승리조건이 있을 경우 따로 체크해둔다.)
-            => 승리 조건이 O(선공)과 X(후공) 둘다 존재할 경우
-          4. 이미 승리했는데 계속 진행하는 경우 =>  성공 조건이 두개 이상일 경우
-           (단, 아래와 같은 케이스일때 마지막 O(선공)이 넣을 경우 예외가 존재함.
-             O  .  O
-             X  O  X
-             X  O  X
+          체크해야하는 경우 :
+          O의 개수-X의 개수=0 or 1
+            O가 이겼다면 O의 개수는 X보다 한 개 많음.
+            X가 이겼다면 O의 개수와 X의 개수는 같음.
+            O와 X는 동시에 이길 수 없음.
 
-        체크해야하는 경우(2) : (1)케이스에서 특정 테스트 케이스일 떄, 예외 케이스가 존재하여 다른 경우의 방식으로 생각한 방법. (완전 탐색)
-            1. O(선공)이 먼저하고, 그다음에 X(후공)이 먼저해야하기 떄문에, 순서 여부를 위해 char 타입 nextPlayer을 선언한다. (O, X)
-            2. 게임판에서 O(선공)과 X(후공)으로 되어 있는 좌표를 선언해둔 클래스 Node에 담아둔뒤 각 배열에 저장한다. (OArray, XArray)
-            3. 너비 우선 탐색 기법(BFS) 및 boolean타입 배열 visit과 순서 nextPlayer를 이용하여 모든 경우의 수를 구한다.
-            4. 정상적인 틱택토 순서로 진행된 경우의 수가 하나라도 존재할 경우 완전 탐색 기법을 종료하고 1을 반환한다. (마지막까지 존재하지 않을 경우 0을 반환한다.)
          */
 
         for (String str : board) {
@@ -124,106 +106,87 @@ public class TictactoesAlon {
             System.out.println();
         }
 
-        setList(board);
+        // X(후공)이 O(선공)보다 개수가 작고 O(선공)이 X(후공)보다 개수가 같거나 한개 이상인지 검토
+        if (checkCount(board)) System.out.println(0);
 
-        for (int i = 0; i < board.length; i++) {
-            if (answer == 1) break;
-            Arrays.fill(nowBoard, "...");
-            nextPlayer = 'O';
-            bfs();
-        }
-        System.out.println(answer);
+        // 반복문을 수행해서 해당 좌표에 O(선공) X(후공)이 존재할 경우, 해당 좌표를 기준으로 가로, 세로, 대각선에 같은 표시가 있는 경우(승리조건)을 찾는다.
+        if (checkBoard(board)) System.out.println(0);
+
+        System.out.println(1);
     }
 
-    public static class Node {
-        int x;
-        int y;
-
-        public Node(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    public static void setList(String[] board) {
-        List<Node> oList = new ArrayList<>();
-        List<Node> xList = new ArrayList<>();
+    public static boolean checkCount(String[] board) {
 
         for (int i = 0; i < board.length; i++) {
-            char[] charArr = board[i].toCharArray();
-            for (int j = 0; j < charArr.length; j++) {
-                if (charArr[j] == 'O') oList.add(new Node(i, j));
-                else if (charArr[j] == 'X') xList.add(new Node(i, j));
+            char[] chars = board[i].toCharArray();
+            for (int j = 0; j < chars.length; j++) {
+                if (chars[j] == 'O') oCount++;
+                else if (chars[j] == 'X') xCount++;
             }
         }
 
-        oNodeArr = oList.toArray(new Node[oList.size()]);
-        xNodeArr = xList.toArray(new Node[xList.size()]);
-        ovisit = new boolean[oNodeArr.length];
-        xvisit = new boolean[xNodeArr.length];
+        // X(후공)이 O(선공)보다 개수가 작을 경우 불가능
+        if (xCount > oCount) return true;
+
+        // O(선공)이 X(후공)보다 개수가 두개 이상일 경우 불가능
+        if (oCount >= xCount + 2) return true;
+
+        return false;
     }
 
-    public static void bfs() {
-        if (answer == 1) return;
-        if (checkFinish()) {
-            answer = 1;
-            return;
-        }
+    public static boolean checkBoard(String[] board) {
+        boolean oWin = false;
+        boolean xWin = false;
 
-        if (nextPlayer == 'O') {
-            for (int i = 0; i < oNodeArr.length; i++) {
-                if (ovisit[i]) continue;
-
-                Node node = oNodeArr[i];
-                String str = "";
-                for (int k = 0; k < 3; k++) {
-                    if (k == node.y) str += "O";
-                    else str += str.charAt(k);
+        for (int i = 0; i < board.length; i++) {
+            char[] chars = board[i].toCharArray();
+            for (int j = 0; j < chars.length; j++) {
+                if (chars[j] == 'O' && !oWin) {
+                    if (checkWin(board, i, j, 'O')) oWin = true;
                 }
-
-                nowBoard[node.x] = str;
-
-                checkWin();
-                ovisit[i] = true;
-                nextPlayer = 'X';
-                bfs();
-                ovisit[i] = false;
-                nextPlayer = 'O';
-            }
-        } else {
-            for (int i = 0; i < xNodeArr.length; i++) {
-                if (xvisit[i]) continue;
-
-                checkWin();
-                xvisit[i] = true;
-                nextPlayer = 'O';
-                bfs();
-                xvisit[i] = false;
-                nextPlayer = 'X';
+                else if (chars[j] == 'X' && !xWin) {
+                    if (checkWin(board, i, j, 'X')) xWin = true;
+                }
             }
         }
+
+        if (oWin && xWin) return true;
+        if (oWin && oCount != (xCount + 1)) return true;
+        if (xWin && oCount != xCount) return true;
+        else return false;
     }
 
-    public static boolean checkFinish() {
-        for (int i = 0; i < ovisit.length; i++) {
-            if (!ovisit[i]) return false;
+    public static boolean checkWin(String[] board, int row, int col, char c) {
+        // 가로줄 체크 (해당 가로줄에 다른 값이 존재하지 않을 경우(-1일 경우) 승리 조건에 적합
+        String str = c == 'O' ? "X" : "O";
+        if (board[row].charAt(0) == c && board[row].charAt(1) == c && board[row].charAt(2) == c) return true;
+
+        // 세로줄 체크
+        if (board[0].charAt(col) == c && board[1].charAt(col) == c && board[2].charAt(col) == c) return true;
+
+        // 대각선 체크 (각 4방면의 가장자리 및 가운데일 경우에만 체크)
+        boolean check1 = (row == 0 && col == 0) ? true : false; // 왼쪽위 대각선
+        boolean check2 = (row == 0 && col == 2) ? true : false; // 오른쪽위 대각선
+        boolean check3 = (row == 2 && col == 0) ? true : false; // 왼쪽아래 대각선
+        boolean check4 = (row == 2 && col == 2) ? true : false; // 오른쪽아래 대각선
+        boolean check5 = (row == 1 && col == 1) ? true : false; // 가운데
+
+        if (check1 || check4 || check5) { // 왼쪽위에서 오른쪽 아래로 대각선인 부분 체크
+            boolean leftUp = board[0].charAt(0) == c;
+            boolean middle = board[1].charAt(1) == c;
+            boolean rightDown = board[2].charAt(2) == c;
+
+            if (leftUp && middle && rightDown) return true;
         }
 
-        for (int j = 0; j < ovisit.length; j++) {
-            if (!xvisit[j]) return false;
+        if (check2 || check3 || check5) { // 오른쪽 위에서 왼쪽 아래로 대각선인 부분 체크
+            boolean rightUp = board[0].charAt(2) == c;
+            boolean middle = board[1].charAt(1) == c;
+            boolean leftDown = board[2].charAt(0) == c;
+
+            if (rightUp && middle && leftDown) return true;
         }
 
-        return true;
-    }
-
-    public static boolean checkWin() {
-        for (int i = 0; i < nowBoard.length; i++) {
-            char[] charArr = nowBoard[i].toCharArray();
-            for (int j = 0; j < charArr.length; j++) {
-
-            }
-        }
-
-        return true;
+        return false;
     }
 }
