@@ -120,8 +120,7 @@ public class EmoticonDiscountEvent {
 
         visited = new boolean[emoticons.length];
         int minDiscount = findMinDiscount(users);
-        System.out.println(40-minDiscount);
-        discount = new int[emoticons.length][4];
+        discount = new int[emoticons.length][((40-minDiscount) / 10) + 1];
 
         for (int[] arr : discount) { // 각 이모티콘에 최소 할인율을 시작으로 각각 지정
             int min = minDiscount;
