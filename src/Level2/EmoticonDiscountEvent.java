@@ -1,11 +1,15 @@
 package Level2;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Stack;
 
 public class EmoticonDiscountEvent {
     private static int[] answer = new int[2];
     private static int[][] discount;
     private static boolean[] visited;
+    private static int test = 0;
     public static void main(String[] args) {
         /*
             이모티콘 할인행사 (2023 KAKAO BLIND RECRUITMENT)
@@ -95,12 +99,12 @@ public class EmoticonDiscountEvent {
          */
 
         /* TC 1 result : [1, 5400] */
-        int[][] users = {{40, 10000}, {25, 10000}};
-        int[] emoticons = {7000, 9000};
+        //int[][] users = {{40, 10000}, {25, 10000}};
+        //int[] emoticons = {7000, 9000};
 
         /* TC 2 result : [4, 13860] */
-        //int[][] users = {{40, 2900}, {23, 10000}, {11, 5200}, {5, 5900}, {40, 3100}, {27, 9200}, {32, 6900}};
-        //int[] emoticons = {1300, 1500, 1600, 4900};
+        int[][] users = {{40, 2900}, {23, 10000}, {11, 5200}, {5, 5900}, {40, 3100}, {27, 9200}, {32, 6900}};
+        int[] emoticons = {1300, 1500, 1600, 4900};
 
         /*
             문제 이해하기 및 풀이 방식 고민하기 :
@@ -112,15 +116,20 @@ public class EmoticonDiscountEvent {
               1. 사용자가 정한 할인 비율의 최소 보다 할인율이 적을 경우, 무조건 0원이기 떄문에 구하는 의미가 없다 (예를 들어 모든 사용자가 40프로 이상을 기준으로 잡는다면, 10, 20, 30퍼 할인율은 의미가 없다.
                 => 따라서 최소 비율을 정한 다음, 해당 비율을 기준으로 할인율을 세팅한다. (예를 들어 1번 케이스 같은 경우, 최소 할인율은 30프로 부터 시작해야한다.)
               2. 할인율이 가장 낮은 경우의 수부터 문제를 진행하며 (판매액이 가장 높기 떄문), 해당 경우 일때 나온 플러스 가입자와 판매액을 저장하면서 진행한다.
-              3. (1) 경우의 수를 진행하면서, 플러스 가입자가 더 많거나, 플러스 가입자가 같더라도 판매액이 더 높은 경우의 수가 생길 경우 결과를 해당 값으로 교체한다.
-              4. (1) ~ (2) 경우의 수를 진행하다가, 모든 사용자의 요구하는 할인율 이상을 모든 이모티콘에 적용했을떄 플러스 사용자가 저장해둔 결과와 동일할 경우,
+              3. (2) 경우의 수를 진행하면서, 플러스 가입자가 더 많거나, 플러스 가입자가 같더라도 판매액이 더 높은 경우의 수가 생길 경우 결과를 해당 값으로 교체한다.
+              4. (2) ~ (3) 경우의 수를 진행하다가, 모든 사용자의 요구하는 할인율 이상을 모든 이모티콘에 적용했을떄 플러스 사용자가 저장해둔 결과와 동일할 경우,
                  저장해둔 결과에 판매액이 더 높기 떄문에 해당 결과를 반환하며 종료한다.
                  (이후 할인율을 높이더라도 플러스 사용자는 같거나 더 작으며, 판매액또한 줄어들기 떄문에 계산할 필요가 없다.)
+
+              위 알고리즘 진행방식에서 (2번) 로직 구현하는 방법 :
+               1. 해당 알고리즘을 구현하려면 모든 경우의 수를 찾는 완전 탐색 기법을 이용해야 한다.
+               2. 이떄, 순서는 상관없기 떄문에 (중복되는 케이스는 제외해야한다.) 이를 제외하고 처리한다.
         */
 
         visited = new boolean[emoticons.length];
         int minDiscount = findMinDiscount(users);
         discount = new int[emoticons.length][((40-minDiscount) / 10) + 1];
+        Stack<Integer> stack = new Stack<>();
 
         for (int[] arr : discount) { // 각 이모티콘에 최소 할인율을 시작으로 각각 지정
             int min = minDiscount;
@@ -133,9 +142,10 @@ public class EmoticonDiscountEvent {
         }
 
         System.out.println(Arrays.deepToString(discount));
-        bfs(users);
+        bfs(users, stack);
 
         System.out.println(answer);
+        System.out.println(test);
         //return answer;
     }
 
@@ -144,14 +154,29 @@ public class EmoticonDiscountEvent {
 
         for (int[] arr : users) {
             int num = arr[0] / 10 + 1;
-            if (min > num) min = num;
+            if (min > num) min = num;//16
         }
 
         min *= 10;
         return min >= 40 ? 40 : min;
     }
 
-    public static void bfs(int[][] users) {
+    public static void bfs(int[][] users, Stack<Integer> stack) {
+        for (int i = 0; i < discount[0].length; i++) {
+            stack.add(discount[0][i]);
+            if (stack.size() == discount.length) {
+                test++;
+                System.out.println(stack);
+                checkSales(users, stack);
+                stack.pop();
+            } else {
+                bfs(users, stack);
+                stack.pop();
+            }
+        }
+    }
+
+    public static void checkSales(int[][] users, Stack<Integer> stack) {
 
     }
 }
