@@ -1,15 +1,15 @@
 package Level2;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class EmoticonDiscountEvent {
-    private static int[] answer = new int[2];
-    private static int[][] discount;
-    private static boolean[] visited;
-    private static int test = 0;
+    private static int[] answer = new int[2]; // 반환할 answer값
+    private static int[][] discount; // 적용해야할 할인율을 담아두긴 위한 배열
+    private static int[][] emoticonsDntPrice; // 할인된 이모티콘 금액을 적기 위한 배열
+    private static int MAX_USER_DISCOUNT = 0; // 사용자들이 요구하는 할인율의 최대 퍼센트
+    private static boolean checkDiscountFlag = false; // 사용자들이 요구하는 할인율을 모두 충족했을 경우
     public static void main(String[] args) {
         /*
             이모티콘 할인행사 (2023 KAKAO BLIND RECRUITMENT)
@@ -117,8 +117,7 @@ public class EmoticonDiscountEvent {
                 => 따라서 최소 비율을 정한 다음, 해당 비율을 기준으로 할인율을 세팅한다. (예를 들어 1번 케이스 같은 경우, 최소 할인율은 30프로 부터 시작해야한다.)
               2. 할인율이 가장 낮은 경우의 수부터 문제를 진행하며 (판매액이 가장 높기 떄문), 해당 경우 일때 나온 플러스 가입자와 판매액을 저장하면서 진행한다.
               3. (2) 경우의 수를 진행하면서, 플러스 가입자가 더 많거나, 플러스 가입자가 같더라도 판매액이 더 높은 경우의 수가 생길 경우 결과를 해당 값으로 교체한다.
-              4. (2) ~ (3) 경우의 수를 진행하다가, 모든 사용자의 요구하는 할인율 이상을 모든 이모티콘에 적용했을떄 플러스 사용자가 저장해둔 결과와 동일할 경우,
-                 저장해둔 결과에 판매액이 더 높기 떄문에 해당 결과를 반환하며 종료한다.
+              4. (2) ~ (3) 경우의 수를 진행하다가, 모든 사용자의 요구하는 할인율 이상을 모든 이모티콘에 적용했을떄까지만 진행하고 종료한다.
                  (이후 할인율을 높이더라도 플러스 사용자는 같거나 더 작으며, 판매액또한 줄어들기 떄문에 계산할 필요가 없다.)
 
               위 알고리즘 진행방식에서 (2번) 로직 구현하는 방법 :
@@ -126,10 +125,25 @@ public class EmoticonDiscountEvent {
                2. 이떄, 순서는 상관없기 떄문에 (중복되는 케이스는 제외해야한다.) 이를 제외하고 처리한다.
         */
 
-        visited = new boolean[emoticons.length];
+        emoticonsDntPrice = new int[emoticons.length][2]; //첫번째 열 : 적용한 할인율, 두번째 열 : 할인적용된 금액
         int minDiscount = findMinDiscount(users);
         discount = new int[emoticons.length][((40-minDiscount) / 10) + 1];
         Stack<Integer> stack = new Stack<>();
+
+        setDiscount(users, minDiscount);
+
+        bfs(users, emoticons, stack);
+
+        System.out.println(Arrays.toString(answer));
+    }
+
+    public static void setDiscount(int[][] users, int minDiscount) {
+        for (int[] user : users) {
+            if (user[0] > MAX_USER_DISCOUNT) {
+                if (user[0] == 40) MAX_USER_DISCOUNT = 40;
+                else MAX_USER_DISCOUNT = ((user[0] / 10) + 1) * 10;
+            }
+        }
 
         for (int[] arr : discount) { // 각 이모티콘에 최소 할인율을 시작으로 각각 지정
             int min = minDiscount;
@@ -140,13 +154,6 @@ public class EmoticonDiscountEvent {
                 min += 10;
             }
         }
-
-        System.out.println(Arrays.deepToString(discount));
-        bfs(users, stack);
-
-        System.out.println(answer);
-        System.out.println(test);
-        //return answer;
     }
 
     public static int findMinDiscount(int[][] users) {
@@ -161,22 +168,65 @@ public class EmoticonDiscountEvent {
         return min >= 40 ? 40 : min;
     }
 
-    public static void bfs(int[][] users, Stack<Integer> stack) {
+    public static void bfs(int[][] users, int[] emoticons, Stack<Integer> stack) {
         for (int i = 0; i < discount[0].length; i++) {
+            if (checkDiscountFlag) break;
             stack.add(discount[0][i]);
             if (stack.size() == discount.length) {
-                test++;
-                System.out.println(stack);
-                checkSales(users, stack);
+                setDiscountPrice(users, emoticons, stack);
+                checkSales(users);
                 stack.pop();
             } else {
-                bfs(users, stack);
+                bfs(users, emoticons, stack);
                 stack.pop();
             }
         }
     }
 
-    public static void checkSales(int[][] users, Stack<Integer> stack) {
+    public static void setDiscountPrice(int[][] users, int[] emoticons, Stack<Integer> stack) {
+        // 스택은 후입선출(LIFO)이지만, Iterator는 넣어진 기준대로 주어지는 선입선출(FIFO)이기 떄문에 주의해야한다.
+        Iterator<Integer> iterator = stack.iterator();
+        int cnt = 0;
+        int checkProdMaxDnt = 0; // 최대 할인율이 적용된 상품의 개수 구하기
+        while (iterator.hasNext()) {
+            int discountPercent = iterator.next();
+            emoticonsDntPrice[cnt][0] = discountPercent;
+            emoticonsDntPrice[cnt][1] = emoticons[cnt] - (int)(emoticons[cnt] * (discountPercent / 100.0));
 
+            if (discountPercent >= MAX_USER_DISCOUNT) checkProdMaxDnt++;
+            cnt++;
+        }
+
+        if (checkProdMaxDnt == emoticons.length) checkDiscountFlag = true;
+    }
+
+    public static void checkSales(int[][] users) {
+        int total = 0;
+        int emoticonPlus = 0;
+        for (int[] user : users) {
+            int minPercent = user[0];
+            int maxPirce = user[1];
+            int sum = 0;
+            boolean flag = true;
+            for (int[] dntPrice : emoticonsDntPrice) {
+                if (minPercent > dntPrice[0]) continue; // 사용자 기준 할인율보다 적은 할인율이 적용된 상품은 스킵
+
+                sum += dntPrice[1];
+                if (sum >= maxPirce) {
+                    emoticonPlus++; //이모티콘 플러스 사용자 증가 후 종료 처리
+                    flag = false;
+                    break;
+                }
+            }
+
+            if (flag) total += sum;
+        }
+
+        if (emoticonPlus > answer[0]) {
+            answer[0] = emoticonPlus;
+            answer[1] = total;
+        } else if (emoticonPlus == answer[0] && total > answer[1]) {
+            answer[1] = total;
+        }
     }
 }
