@@ -72,8 +72,6 @@ public class InterceptSystem {
             else return a[0]- b[0];
         });
 
-        System.out.println(Arrays.deepToString(targets));
-
         System.out.println(intercept(targets));
     }
 
