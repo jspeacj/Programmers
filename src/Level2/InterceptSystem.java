@@ -1,13 +1,8 @@
 package Level2;
 
-import java.util.PriorityQueue;
 import java.util.Arrays;
 
 public class InterceptSystem {
-    private static boolean[] check = new boolean[100000001];
-    private static boolean[][] interceptCheck;
-    private static PriorityQueue<int[]> pq = new PriorityQueue<>((int[] a, int[] b) -> a[1] - b[1]);
-
     public static void main(String[] args) {
         /*
             요격 시스템
@@ -71,70 +66,41 @@ public class InterceptSystem {
         */
 
         int answer = 0;
-        Arrays.sort(targets, (int[] a, int[] b) -> a[1] - b[1]);
-        int row = 0;
-        int col = 0;
-        for (int[] arr : targets) {
-            if (arr[0] > row) row = arr[0];
-            if (arr[1] > col) col = arr[1];
-            pq.add(arr);
-        }
 
-        interceptCheck = new boolean[row + 1][col + 1];
+        Arrays.sort(targets, (int[] a, int[] b) -> {
+            if (a[0] - b[0] == 0) return b[1] - a[1];
+            else return a[0]- b[0];
+        });
 
-        while (!pq.isEmpty()) {
-            int[] target = pq.poll();
-            if (checkLocation(target)) continue;
-            System.out.println(Arrays.toString(target));
-            checkTarget(target, targets);
-            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-            answer++;
-        }
+        System.out.println(Arrays.deepToString(targets));
 
-        System.out.println(answer);
+        System.out.println(intercept(targets));
     }
 
-    public static boolean checkLocation(int[] target) {
-        for (int i = target[0]; i < target[1]; i++) {
-            // 넣어둔 좌표는 실제로는 해당 인덱스보다 좀더 큰 값(예를 들어서 check[11]일 경우, 11 ~ 12사이에 미사일을 발사한 것이다.)이므로, 해당 값을 기준으로 한다.
-            if (check[i]) {
-                interceptCheck[target[0]][target[1]] = true;
-                return true;
-            }
-        }
+    public static int intercept(int[][] targets) {
+        int cnt = 1;
+        int s = 0;
+        int e = 100000000;
 
-        return false;
-    }
-
-    public static void checkTarget(int[] target, int[][] targets) {
-        interceptCheck[target[0]][target[1]] = true;
-        if (target[1] - target[0] == 1) {
-            // 좌표가 하나일 경우 해당 좌표를 등록 후 종료
-            check[target[0]] = true;
-            System.out.println("단건 최종 위치 : " + target[0]);
-            return;
-        }
-
-        // 좌표가 여러개인 경우의 수는 반복문을 통해 가장 경우의 수가 많은 값을 등록
-        int locate = 0; // 저장할 좌표
-        int maxCnt = 0; // 포함될 개수
-
-        for (int i = target[0]; i < target[1]; i++) {
-            int cnt = 0;
-
-            for (int[] arr : targets) {
-                if (!interceptCheck[arr[0]][arr[1]] && arr[0] <= i && arr[1] > i) cnt++;
-                if (arr[0] > i) break;
+        for (int[] target : targets) {
+            int curS = target[0];
+            int curE = target[1];
+            if (curS >= s && curE <= e) {
+                s = curS;
+                e = curE;
+                continue;
             }
 
-            System.out.println(i + "일 떄 : " + cnt);
-            if (cnt > maxCnt) {
-                maxCnt = cnt;
-                locate = i;
+            if (curS < e && curE >= e) {
+                s = curS;
+            }
+
+            if (e <= curS) {
+                s = curS;
+                e = curE;
+                cnt++;
             }
         }
-
-        System.out.println("다건 최종 위치 : " + locate);
-        check[locate] = true;
+        return cnt;
     }
 }
