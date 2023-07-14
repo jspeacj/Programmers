@@ -1,5 +1,6 @@
 package Level2;
 
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
@@ -100,8 +101,18 @@ public class RankingSearch {
         StringBuilder sb = new StringBuilder();
 
         for (String str : info) {
+            sb.setLength(0);
             String[] arr = str.split(" ");
-            System.out.println(Arrays.toString(arr));
+            sb.append(arr[0] + arr[1] + arr[2] + arr[3]);
+            infoMap.put(sb.toString(), infoMap.getOrDefault(sb.toString(),"")+ arr[4] + ",");
+        }
+
+        System.out.println(infoMap);
+
+        for (String qStr : query) {
+            String[] queryArr = qStr.split(" ");
+            System.out.println(Arrays.toString(queryArr));
+            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         }
     }
 }
