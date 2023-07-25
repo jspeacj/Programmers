@@ -1,11 +1,14 @@
 package Level2;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class RankingSearch {
+    private static Map<String, String> infoMap = new HashMap<>();
+    private static List<Integer> passerList = new ArrayList<>();
     public static void main(String[] args) {
         /*
             순위 검색
@@ -93,26 +96,68 @@ public class RankingSearch {
         String[] info = {"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"};
         String[] query = {"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"};
 
-        /*
-            문제 이해하기 및 풀이 방식 :
-            1.
-        */
-        Map<String, String> infoMap = new HashMap<>();
         StringBuilder sb = new StringBuilder();
 
         for (String str : info) {
             sb.setLength(0);
             String[] arr = str.split(" ");
             sb.append(arr[0] + arr[1] + arr[2] + arr[3]);
-            infoMap.put(sb.toString(), infoMap.getOrDefault(sb.toString(),"")+ arr[4] + ",");
+            infoMap.put(sb.toString(), infoMap.getOrDefault(sb.toString(),"") + arr[4] + ",");
         }
 
-        System.out.println(infoMap);
+        System.out.println(Arrays.toString(findPasser(query)));
+    }
 
+    public static int[] findPasser(String[] query) {
+        int num = 0;
+        int cnt = 0;
+        int index = 0;
+        String[] conditions = new String[4];
         for (String qStr : query) {
-            String[] queryArr = qStr.split(" ");
-            System.out.println(Arrays.toString(queryArr));
-            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+            String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
+            num = 0;
+            cnt = 0;
+            index = 0;
+            for (String que : queryArr) {
+                if ("and".equals(que)) continue;
+
+                if (index == 4) { // 점수 값 저장 후 종료
+                    num = Integer.parseInt(que);
+                    break;
+                }
+
+                conditions[index++] = que;
+            }
+
+            // like 조건처럼 포함되어 있는 경우는 모두 적용시키기
+            for (String key : infoMap.keySet()) {
+                boolean checkFlag = true;
+                for (String condition : conditions) {
+                    if ("-".equals(condition)) continue;
+
+                    if (!key.contains(condition)) {
+                        checkFlag = false;
+                        break;
+                    }
+                }
+
+                if (checkFlag) {
+                    String[] strings = infoMap.get(key).split(",");
+                    for (String s : strings) {
+                        if (Integer.parseInt(s) >= num) {
+                            cnt++;
+                        }
+                    }
+                }
+            }
+
+            passerList.add(cnt);
         }
+
+        int[] answer = new int[passerList.size()];
+        index = 0;
+        for (int n : passerList) answer[index++] = n;
+
+        return answer;
     }
 }
