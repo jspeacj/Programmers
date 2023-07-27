@@ -96,6 +96,8 @@ public class RankingSearch {
         String[] info = {"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"};
         String[] query = {"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"};
 
+
+        /* Try 1
         StringBuilder sb = new StringBuilder();
 
         for (String str : info) {
@@ -104,8 +106,59 @@ public class RankingSearch {
             sb.append(arr[0] + arr[1] + arr[2] + arr[3]);
             infoMap.put(sb.toString(), infoMap.getOrDefault(sb.toString(),"") + arr[4] + ",");
         }
+            System.out.println(Arrays.toString(findPasser(query)));
+        */
 
-        System.out.println(Arrays.toString(findPasser(query)));
+        Arrays.sort(info, (a,b) -> Integer.parseInt(b.split(" ")[4]) - Integer.parseInt(a.split(" ")[4]));
+
+        System.out.println(Arrays.toString(findPasser2(info, query)));
+    }
+
+    public static int[] findPasser2(String[] info, String[] query) {
+        List<Integer> passerList = new ArrayList<>();
+        int num = 0;
+        int cnt = 0;
+        int index = 0;
+        boolean checkFlag = true;
+        String[] conditions = new String[4];
+        for (String qStr : query) {
+            String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
+            num = 0;
+            cnt = 0;
+            index = 0;
+            for (String que : queryArr) {
+                if ("and".equals(que)) continue;
+
+                if (index == 4) { // 점수 값 저장 후 종료
+                    num = Integer.parseInt(que);
+                    break;
+                }
+
+                conditions[index++] = que;
+            }
+
+            for (String infoStr : info) {
+                checkFlag = true;
+                String[] infoArr = infoStr.split(" ");
+                if (Integer.parseInt(infoArr[4]) < num) break;
+
+                for (index = 0; index < 4; index++) {
+                    if (!checkFlag) break;
+                    if ("-".equals(conditions[index])) continue;
+                    if (!conditions[index].equals(infoArr[index])) checkFlag = false;
+                }
+
+                if (checkFlag) cnt++;
+            }
+
+            passerList.add(cnt);
+        }
+
+        int[] answer = new int[passerList.size()];
+        index = 0;
+        for (int n : passerList) answer[index++] = n;
+
+        return answer;
     }
 
     public static int[] findPasser(String[] query) {
