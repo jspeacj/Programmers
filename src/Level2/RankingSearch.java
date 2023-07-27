@@ -1,13 +1,14 @@
 package Level2;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
 public class RankingSearch {
-    private static Map<String, String> infoMap = new HashMap<>();
+    private static Map<String, List<Integer>> infoMap = new HashMap<>();
     private static List<Integer> passerList = new ArrayList<>();
     public static void main(String[] args) {
         /*
@@ -96,69 +97,26 @@ public class RankingSearch {
         String[] info = {"java backend junior pizza 150","python frontend senior chicken 210","python frontend senior chicken 150","cpp backend senior pizza 260","java backend junior chicken 80","python backend senior chicken 50"};
         String[] query = {"java and backend and junior and pizza 100","python and frontend and senior and chicken 200","cpp and - and senior and pizza 250","- and backend and senior and - 150","- and - and - and chicken 100","- and - and - and - 150"};
 
-
-        /* Try 1
         StringBuilder sb = new StringBuilder();
 
         for (String str : info) {
             sb.setLength(0);
             String[] arr = str.split(" ");
             sb.append(arr[0] + arr[1] + arr[2] + arr[3]);
-            infoMap.put(sb.toString(), infoMap.getOrDefault(sb.toString(),"") + arr[4] + ",");
-        }
-            System.out.println(Arrays.toString(findPasser(query)));
-        */
-
-        Arrays.sort(info, (a,b) -> Integer.parseInt(b.split(" ")[4]) - Integer.parseInt(a.split(" ")[4]));
-
-        System.out.println(Arrays.toString(findPasser2(info, query)));
-    }
-
-    public static int[] findPasser2(String[] info, String[] query) {
-        List<Integer> passerList = new ArrayList<>();
-        int num = 0;
-        int cnt = 0;
-        int index = 0;
-        boolean checkFlag = true;
-        String[] conditions = new String[4];
-        for (String qStr : query) {
-            String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
-            num = 0;
-            cnt = 0;
-            index = 0;
-            for (String que : queryArr) {
-                if ("and".equals(que)) continue;
-
-                if (index == 4) { // 점수 값 저장 후 종료
-                    num = Integer.parseInt(que);
-                    break;
-                }
-
-                conditions[index++] = que;
+            if (infoMap.containsKey(sb.toString())) { // 이미 키가 존재할 경우
+                infoMap.get(sb.toString()).add(Integer.parseInt(arr[4]));
+            } else { // 키가 존재하지 않을 경우 (최초 세팅)
+                List<Integer> list = new ArrayList<>();
+                list.add(Integer.parseInt(arr[4]));
+                infoMap.put(sb.toString(), list);
             }
-
-            for (String infoStr : info) {
-                checkFlag = true;
-                String[] infoArr = infoStr.split(" ");
-                if (Integer.parseInt(infoArr[4]) < num) break;
-
-                for (index = 0; index < 4; index++) {
-                    if (!checkFlag) break;
-                    if ("-".equals(conditions[index])) continue;
-                    if (!conditions[index].equals(infoArr[index])) checkFlag = false;
-                }
-
-                if (checkFlag) cnt++;
-            }
-
-            passerList.add(cnt);
         }
 
-        int[] answer = new int[passerList.size()];
-        index = 0;
-        for (int n : passerList) answer[index++] = n;
+        for (String key : infoMap.keySet()) {
+            infoMap.get(key).sort(Comparator.reverseOrder());
+        }
 
-        return answer;
+        System.out.println(Arrays.toString(findPasser(query)));
     }
 
     public static int[] findPasser(String[] query) {
@@ -195,9 +153,10 @@ public class RankingSearch {
                 }
 
                 if (checkFlag) {
-                    String[] strings = infoMap.get(key).split(",");
-                    for (String s : strings) {
-                        if (Integer.parseInt(s) >= num) {
+                    List<Integer> scoreList = infoMap.get(key);
+                    for (int score : scoreList) {
+                        if (score < num) break;
+                        if (score >= num) {
                             cnt++;
                         }
                     }
