@@ -10,6 +10,9 @@ import java.util.ArrayList;
 public class RankingSearch {
     private static Map<String, List<Integer>> infoMap = new HashMap<>();
     private static List<Integer> passerList = new ArrayList<>();
+    private static String[] infoArr;
+    private static int score;
+    private static String[] conditions = new String[4];
     public static void main(String[] args) {
         /*
             순위 검색
@@ -101,24 +104,30 @@ public class RankingSearch {
 
         for (String str : info) {
             sb.setLength(0);
-            String[] arr = str.split(" ");
-            sb.append(arr[0] + arr[1] + arr[2] + arr[3]);
-            if (infoMap.containsKey(sb.toString())) { // 이미 키가 존재할 경우
-                infoMap.get(sb.toString()).add(Integer.parseInt(arr[4]));
-            } else { // 키가 존재하지 않을 경우 (최초 세팅)
-                List<Integer> list = new ArrayList<>();
-                list.add(Integer.parseInt(arr[4]));
-                infoMap.put(sb.toString(), list);
-            }
+            infoArr = str.split(" ");
+            score = Integer.parseInt(infoArr[4]);
+            dfs(0);
         }
 
         for (String key : infoMap.keySet()) {
-            infoMap.get(key).sort(Comparator.reverseOrder());
+            System.out.println(key + "  : " + infoMap.get(key));
         }
 
         System.out.println(Arrays.toString(findPasser(query)));
     }
 
+    public static void dfs(int index) {
+        if (index == 4) {
+            String str = String.join("", conditions);
+            if (!infoMap.containsKey(str)) infoMap.put(str, new ArrayList<>());
+            else infoMap.get(str).add(score);
+        } else {
+            conditions[index] = infoArr[index];
+            dfs(index+1);
+            conditions[index] = "-";
+            dfs(index+1);
+        }
+    }
     public static int[] findPasser(String[] query) {
         int num = 0;
         int cnt = 0;
@@ -129,23 +138,10 @@ public class RankingSearch {
             num = 0;
             cnt = 0;
             index = 0;
-            for (String que : queryArr) {
-                if ("and".equals(que)) continue;
 
-                if (index == 4) { // 점수 값 저장 후 종료
-                    num = Integer.parseInt(que);
-                    break;
-                }
-
-                conditions[index++] = que;
-            }
-
-            // like 조건처럼 포함되어 있는 경우는 모두 적용시키기
             for (String key : infoMap.keySet()) {
                 boolean checkFlag = true;
                 for (String condition : conditions) {
-                    if ("-".equals(condition)) continue;
-
                     if (!key.contains(condition)) {
                         checkFlag = false;
                         break;
@@ -167,7 +163,6 @@ public class RankingSearch {
         }
 
         int[] answer = new int[passerList.size()];
-        index = 0;
         for (int n : passerList) answer[index++] = n;
 
         return answer;
