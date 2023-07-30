@@ -129,32 +129,29 @@ public class RankingSearch {
         }
     }
     public static int[] findPasser(String[] query) {
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ시작ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         int num = 0;
         int cnt = 0;
-        int index = 0;
-        String[] conditions = new String[4];
+        StringBuilder sb = new StringBuilder();
         for (String qStr : query) {
-            String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
+            sb.setLength(0);
             num = 0;
             cnt = 0;
-            index = 0;
 
-            for (String key : infoMap.keySet()) {
-                boolean checkFlag = true;
-                for (String condition : conditions) {
-                    if (!key.contains(condition)) {
-                        checkFlag = false;
-                        break;
-                    }
-                }
+            String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
+            for (int index = 0; index < queryArr.length; index++) {
+                if ("and".equals(queryArr[index])) continue;
+                else if (index == queryArr.length - 1) num = Integer.parseInt(queryArr[index]);
+                else sb.append(queryArr[index]);
+            }
 
-                if (checkFlag) {
-                    List<Integer> scoreList = infoMap.get(key);
-                    for (int score : scoreList) {
-                        if (score < num) break;
-                        if (score >= num) {
-                            cnt++;
-                        }
+            System.out.println(sb.toString());
+            if (infoMap.containsKey(sb.toString())) {
+                List<Integer> scoreList = infoMap.get(sb.toString());
+                for (int score : scoreList) {
+                    if (score < num) break;
+                    if (score >= num) {
+                        cnt++;
                     }
                 }
             }
@@ -163,7 +160,7 @@ public class RankingSearch {
         }
 
         int[] answer = new int[passerList.size()];
-        for (int n : passerList) answer[index++] = n;
+        for (int n = 0; n < passerList.size(); n++) answer[n] = passerList.get(n);
 
         return answer;
     }
