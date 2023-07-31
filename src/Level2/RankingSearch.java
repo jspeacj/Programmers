@@ -1,7 +1,7 @@
 package Level2;
 
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -110,7 +110,7 @@ public class RankingSearch {
         }
 
         for (String key : infoMap.keySet()) {
-            System.out.println(key + "  : " + infoMap.get(key));
+            Collections.sort(infoMap.get(key));
         }
 
         System.out.println(Arrays.toString(findPasser(query)));
@@ -120,7 +120,7 @@ public class RankingSearch {
         if (index == 4) {
             String str = String.join("", conditions);
             if (!infoMap.containsKey(str)) infoMap.put(str, new ArrayList<>());
-            else infoMap.get(str).add(score);
+            infoMap.get(str).add(score);
         } else {
             conditions[index] = infoArr[index];
             dfs(index+1);
@@ -129,15 +129,12 @@ public class RankingSearch {
         }
     }
     public static int[] findPasser(String[] query) {
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ시작ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         int num = 0;
         int cnt = 0;
         StringBuilder sb = new StringBuilder();
         for (String qStr : query) {
             sb.setLength(0);
             num = 0;
-            cnt = 0;
-
             String[] queryArr = qStr.split(" "); // 공백을 기준으로 분리
             for (int index = 0; index < queryArr.length; index++) {
                 if ("and".equals(queryArr[index])) continue;
@@ -145,15 +142,11 @@ public class RankingSearch {
                 else sb.append(queryArr[index]);
             }
 
-            System.out.println(sb.toString());
             if (infoMap.containsKey(sb.toString())) {
-                List<Integer> scoreList = infoMap.get(sb.toString());
-                for (int score : scoreList) {
-                    if (score < num) break;
-                    if (score >= num) {
-                        cnt++;
-                    }
-                }
+                List<Integer> answerList = infoMap.get(sb.toString());
+                cnt = answerList.size() - lowerBound(answerList, num);
+            } else {
+                cnt = 0;
             }
 
             passerList.add(cnt);
@@ -163,5 +156,20 @@ public class RankingSearch {
         for (int n = 0; n < passerList.size(); n++) answer[n] = passerList.get(n);
 
         return answer;
+    }
+
+    public static int lowerBound(List<Integer> list, int key) {
+        int left = 0, right = list.size() - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+
+            if (list.get(mid) < key)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+
+        return left;
     }
 }
