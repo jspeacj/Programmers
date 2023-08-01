@@ -1,6 +1,9 @@
 package Level2;
 
+
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ArcheryCompetition {
     public static int diffCnt = 0;					     // 라이언 점수와 어피치 점수를 계산하기 위한 변수
@@ -8,6 +11,7 @@ public class ArcheryCompetition {
     public static boolean[] visited = new boolean[11];	 // 이미 검토한 곳인지 체크하기 위한 배열
     public static int[] ryan = new int[11];			     // 각 과녁에 라이언 화살 개수를 저장하기 위한 배열
     public static boolean[] apeachVisit = new boolean[11]; // 각 과녁에 어피치 화살이 존재하는지 여부를 위한 배열
+    public static Queue<int[]> queue = new LinkedList<>(); // 최대 점수 차인 케이스들을 담아두는 큐
     public static void main(String[] args) {
         /*
             양궁대회 (2022 KAKAO BLIND RECRUITMENT)
@@ -186,7 +190,7 @@ public class ArcheryCompetition {
         for (int i = index; i < info.length; i++) {
             if (visited[i]) continue;
 
-            if (n > info[i] + 1) {
+            if (n >= info[i] + 1) {
                 ryan[i] = info[i] + 1;
                 visited[i] = true;
                 dfs(n - (info[i] + 1), info, i + 1);
@@ -212,10 +216,13 @@ public class ArcheryCompetition {
             }
         }
 
-        if (sum >= diffCnt) { // 해당 케이스 점수 차이가 저장하고 있는 점수 차이보다 클 경우 해당 케이스로 저장
+        if (sum != 0 && sum >= diffCnt) { // 해당 케이스 점수 차이가 저장하고 있는 점수 차이보다 클 경우 해당 케이스로 저장
             diffCnt = sum;
-            for (int k = 0; k < ryan.length; k++) {
-                answer[k] = ryan[k];
+            if (sum == diffCnt) { // 점수가 같을 경우, 낮은 점수가 더 많은 케이스를 기준으로 세팅한다.
+                queue.add(ryan);
+            } else {
+                queue.clear();
+                queue.add(ryan);
             }
         }
     }
