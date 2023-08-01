@@ -1,6 +1,13 @@
 package Level2;
 
+import java.util.Arrays;
+
 public class ArcheryCompetition {
+    public static int diffCnt = 0;					     // 라이언 점수와 어피치 점수를 계산하기 위한 변수
+    public static int[] answer = new int[11];			 // 가장 점수 차가 많이 날때의 각 과녁 개수를 저장하기 위한 배열
+    public static boolean[] visited = new boolean[11];	 // 이미 검토한 곳인지 체크하기 위한 배열
+    public static int[] ryan = new int[11];			     // 각 과녁에 라이언 화살 개수를 저장하기 위한 배열
+    public static boolean[] apeachVisit = new boolean[11]; // 각 과녁에 어피치 화살이 존재하는지 여부를 위한 배열
     public static void main(String[] args) {
         /*
             양궁대회 (2022 KAKAO BLIND RECRUITMENT)
@@ -141,8 +148,8 @@ public class ArcheryCompetition {
          */
 
         /* TC 1 result : [0,2,2,0,1,0,0,0,0,0,0] */
-        int n = 5;
-        int[] info = {2,1,1,1,0,0,0,0,0,0,0};
+        //int n = 5;
+        //int[] info = {2,1,1,1,0,0,0,0,0,0,0};
 
 
         /* TC 2 result : [-1] */
@@ -154,8 +161,62 @@ public class ArcheryCompetition {
         //int[] info = {0,0,1,2,0,1,1,1,1,1,1};
 
         /* TC 4 result : [1,1,1,1,1,1,1,1,0,0,2] */
-        //int n = 10;
-        //int[] info = {0,0,0,0,0,0,0,0,3,4,3};
+        int n = 10;
+        int[] info = {0,0,0,0,0,0,0,0,3,4,3};
 
+        /*
+          문제 풀이 방식 :
+           모든 경우의 수를 찾아야 한다.
+           1. 깊이 우선 탐색 (DFS : Depath-First-Search)를 이용하여, 화살의 개수만큼 순차적으로 모든 경우의 수를 구한다.
+           2. 해당 케이스가 저장한 차이 값보다 더 크거나 같을 경우, 해당 차이 값으로 변경하며, 해당 배열을 저장한다.
+           (같아도 저장하는 이유는, 해당 완전탐색은 10점부터 순차적으로 경우의 수를따지기 떄문에,
+           이후 케이스가 이전 케이스보다 더 낮은 점수를 많이 맞춘 케이스이기 떄문에 주어진 조건에 적합하다.)
+           3. 결과를 반환한다.
+        */
+
+        for (int i = 0; i < info.length; i++) {
+            if (info[i] > 0) apeachVisit[i] = true;
+        }
+
+        dfs (n, info, 0);
+        System.out.println(diffCnt == 0 ? Arrays.toString(new int[]{-1}) : Arrays.toString(answer));
+    }
+
+    public static void dfs(int n, int[] info, int index) {
+        for (int i = index; i < info.length; i++) {
+            if (visited[i]) continue;
+
+            if (n > info[i] + 1) {
+                ryan[i] = info[i] + 1;
+                visited[i] = true;
+                dfs(n - (info[i] + 1), info, i + 1);
+                visited[i] = false;
+            } else { // 남은 화살의 해당 과녁의 어피치 화살 개수보다 적을 경우 남은 화살을 적용하고 계산한다.
+                ryan[i] = n;
+                calculate(n, info);
+            }
+            ryan[i] = 0; // 다음 진행을 위해 초기화 시킨다.
+        }
+    }
+
+    private static void calculate(int n, int[] info) {
+        int sum = 0;
+        for (int i = 0; i < ryan.length; i++) {
+            if (!apeachVisit[i] && ryan[i] == 0) continue;
+
+            // 0보다 클 경우 라이언이 점수를 획득하므로 +를, 0보다 작거나 같을 경우 어피치가 점수를 획득했으므로 -로 처리한다.
+            if (ryan[i] - info[i] > 0) {
+                sum += (10 - i);
+            } else {
+                sum -= (10 - i);
+            }
+        }
+
+        if (sum >= diffCnt) { // 해당 케이스 점수 차이가 저장하고 있는 점수 차이보다 클 경우 해당 케이스로 저장
+            diffCnt = sum;
+            for (int k = 0; k < ryan.length; k++) {
+                answer[k] = ryan[k];
+            }
+        }
     }
 }
