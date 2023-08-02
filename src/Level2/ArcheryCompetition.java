@@ -168,6 +168,8 @@ public class ArcheryCompetition {
         int n = 10;
         int[] info = {0,0,0,0,0,0,0,0,3,4,3};
 
+
+
         /*
           문제 풀이 방식 :
            모든 경우의 수를 찾아야 한다.
@@ -183,6 +185,8 @@ public class ArcheryCompetition {
         }
 
         dfs (n, info, 0);
+
+        checkScore();
         System.out.println(diffCnt == 0 ? Arrays.toString(new int[]{-1}) : Arrays.toString(answer));
     }
 
@@ -201,6 +205,7 @@ public class ArcheryCompetition {
             }
             ryan[i] = 0; // 다음 진행을 위해 초기화 시킨다.
         }
+
     }
 
     private static void calculate(int n, int[] info) {
@@ -217,12 +222,28 @@ public class ArcheryCompetition {
         }
 
         if (sum != 0 && sum >= diffCnt) { // 해당 케이스 점수 차이가 저장하고 있는 점수 차이보다 클 경우 해당 케이스로 저장
-            diffCnt = sum;
             if (sum == diffCnt) { // 점수가 같을 경우, 낮은 점수가 더 많은 케이스를 기준으로 세팅한다.
-                queue.add(ryan);
+                queue.add(ryan.clone());
             } else {
                 queue.clear();
-                queue.add(ryan);
+                queue.add(ryan.clone());
+            }
+
+            diffCnt = sum;
+        }
+    }
+
+    public static void checkScore() {
+        while (!queue.isEmpty()) {
+            int[] arr = queue.poll();
+
+            for (int i = arr.length -1; i >= 0; i--) {
+                if (arr[i] > answer[i]) {
+                    answer = arr.clone();
+                    break;
+                } else if(answer[i] > arr[i]){
+                    break;
+                }
             }
         }
     }
