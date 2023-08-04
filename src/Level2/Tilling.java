@@ -1,5 +1,8 @@
 package Level2;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tilling {
     public static void main(String[] args) {
         /*
@@ -53,13 +56,31 @@ public class Tilling {
          n = 4 : 11
          n = 6 : 41
          n = 8 : 153
-         3, 11, 41, 153 ...
-         (+8) (+30)(+112)
-         f(2) = f(1) + f(2)
-         41 - 22 = 19
-         41 - 33 = 8
-         41 - 44
+         f(n)=3f(n-2)+2f(n-4)+2*f(n-6)+....+f(2)+2
+              = 4f(n-2) - f(n-4)
+         ex) f(8) = 4f(6) - f(4)
+             = 164 - 11
+             = 153
         */
 
+        if (n % 2 == 1) { // 홀수
+            System.out.println(0);
+        } else { // 짝수
+            List<Integer> list = new ArrayList<>();
+            list.add(3);
+            list.add(11);
+            list.add(41);
+            list.add(153);
+
+            n = (n / 2); // 짝수개수만 찾으므로, 반으로 나눈다.
+
+            while (n > list.size()) { // 찾을떄까지 반복
+                int index = list.size();
+                int num = (4 * list.get(index - 1)) - (list.get(index - 2));
+                list.add(num);
+                n--;
+            }
+            System.out.println(list.get(n-1) % 1000000007);
+        }
     }
 }
