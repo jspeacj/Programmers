@@ -1,5 +1,7 @@
 package Level2;
 
+import java.util.Arrays;
+
 public class CreateStarNode {
     private static int index = 0;
     private static int deliverTotal = 0;
@@ -84,25 +86,27 @@ public class CreateStarNode {
          */
 
         /* TC 1 result : 16 */
-        int cap = 4;
-        int n = 5;
-        int[] deliveries = {1, 0, 3, 1, 2};
-        int[] pickups = {0, 3, 0, 4, 0};
+//        int cap = 4;
+//        int n = 5;
+//        int[] deliveries = {1, 0, 3, 1, 2};
+//        int[] pickups = {0, 3, 0, 4, 0};
 
         /* TC 2 result : 30 */
-        //int cap = 2;
-        //int n = 7;
-        //int[] deliveries = {1, 0, 2, 0, 1, 0, 2};
-        //int[] pickups = {0, 2, 0, 1, 0, 2, 0};
+        int cap = 2;
+        int n = 7;
+        int[] deliveries = {1, 0, 2, 0, 1, 0, 2};
+        int[] pickups = {0, 2, 0, 1, 0, 2, 0};
 
         checkBoxTotal(n, deliveries, pickups);
-
         while (true) {
+            System.out.println("============================시작=============================");
+            System.out.println("index : " + index);
+            if (index == -1) break;
             if (deliverTotal <= 0 && pickTotal <= 0) break;
             if (cap >= deliverTotal) {
-                moveTruck(cap, deliveries, pickups, cap);
-            } else {
                 moveTruck(deliverTotal, deliveries, pickups, cap);
+            } else {
+                moveTruck(cap, deliveries, pickups, cap);
             }
         }
 
@@ -118,9 +122,15 @@ public class CreateStarNode {
     }
 
     public static void moveTruck(int box, int[] deliveries, int[] pickups, int cap) {
+        boolean flag = true;
         answer += ((index + 1) * 2); // 이동한 거리이기 때문에 인덱스 위치 + 1에다가 다시 물류창고로 돌아가야하므로 2로 곱한다.
+        System.out.println("box : " + box  + ", answer : " + answer + ", delieverTotal : " +deliverTotal + ", pickTotal : " + pickTotal);
         int pickCnt = 0;
         for (int i = index; i >= 0; i--) {
+            System.out.println("--");
+            System.out.println("box : " + box);
+            System.out.println("deliveries : " + Arrays.toString(deliveries));
+            System.out.println("pickups : " + Arrays.toString(pickups));
             if (box == 0) {
                 index = i;
                 break;
@@ -130,6 +140,7 @@ public class CreateStarNode {
                 if ((box - deliveries[i]) >= 0) { // 배달해야할 택배보다 실어둔 택배가 더 많을 경우
                     box -= deliveries[i];
                     deliverTotal -= deliveries[i]; // 총 배달 건수에서 해당 배달한 건수만큼 뺴기
+                    deliveries[i] = 0;
                 } else {
                     deliveries[i] -= box;
                     deliverTotal -= box; // 총 배달 건수에서 해당 배달한 건수만큼 뺴기
@@ -168,5 +179,15 @@ public class CreateStarNode {
                 }
             }
         }
+
+        for (int k = index + 1; k >= 0; k--) { // 이전 집에 배달할 택배가 남아있을 수 있기 때문에 i+1부터 시작
+            if (deliveries[k] > 0 || pickups[k] > 0) {
+                index = k;
+                flag = false;
+                break;
+            }
+        }
+
+        if (flag) index = -1;
     }
 }
