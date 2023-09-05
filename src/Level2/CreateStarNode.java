@@ -7,6 +7,7 @@ public class CreateStarNode {
     private static int deliverTotal = 0;
     private static int pickTotal = 0;
     private static long answer = 0;
+    private static int lastPickIndex = 0;
     public static void main(String[] args) {
         /*
             택배 배달과 수거하기
@@ -100,8 +101,10 @@ public class CreateStarNode {
         checkBoxTotal(n, deliveries, pickups);
         while (true) {
             System.out.println("============================시작=============================");
+            System.out.println("answer : " + answer);
+            System.out.println("deliveries : " + Arrays.toString(deliveries));
+            System.out.println("pickups : " + Arrays.toString(pickups));
             System.out.println("index : " + index);
-            if (index == -1) break;
             if (deliverTotal <= 0 && pickTotal <= 0) break;
             if (cap >= deliverTotal) {
                 moveTruck(deliverTotal, deliveries, pickups, cap);
@@ -115,6 +118,7 @@ public class CreateStarNode {
 
     public static void checkBoxTotal(int n, int[] deliveries, int[] pickups) {
         index = n - 1; // 최초는 가장 마지막 집을 기준으로 수행
+        lastPickIndex = n - 1; // 운반을 한바퀴 종료할때 수거해야하는 집의 마지막 순서로 지정
         for (int i = 0; i < n; i++) {
             deliverTotal += deliveries[i];
             pickTotal += pickups[i];
@@ -122,17 +126,25 @@ public class CreateStarNode {
     }
 
     public static void moveTruck(int box, int[] deliveries, int[] pickups, int cap) {
-        boolean flag = true;
         answer += ((index + 1) * 2); // 이동한 거리이기 때문에 인덱스 위치 + 1에다가 다시 물류창고로 돌아가야하므로 2로 곱한다.
         System.out.println("box : " + box  + ", answer : " + answer + ", delieverTotal : " +deliverTotal + ", pickTotal : " + pickTotal);
         int pickCnt = 0;
+        boolean checkPickFlag = true;
         for (int i = index; i >= 0; i--) {
             System.out.println("--");
             System.out.println("box : " + box);
             System.out.println("deliveries : " + Arrays.toString(deliveries));
             System.out.println("pickups : " + Arrays.toString(pickups));
             if (box == 0) {
-                index = i;
+                for (int n = lastPickIndex; n >= i; n--) {
+                    if (pickups[n] > 0) {
+                        index = n;
+                        checkPickFlag = false;
+                        break;
+                    }
+                }
+
+                if (checkPickFlag) index = i;
                 break;
             }
 
@@ -183,11 +195,8 @@ public class CreateStarNode {
         for (int k = index + 1; k >= 0; k--) { // 이전 집에 배달할 택배가 남아있을 수 있기 때문에 i+1부터 시작
             if (deliveries[k] > 0 || pickups[k] > 0) {
                 index = k;
-                flag = false;
                 break;
             }
         }
-
-        if (flag) index = -1;
     }
 }
