@@ -37,34 +37,6 @@ public class PseudoCantorBitString {
         int l = 4;
         int r = 17;
 
-        int cnt = 0;
-        StringBuilder sb = new StringBuilder();
-        //String str = "1101111011000001101111011"; // 2번쨰
-        //String str = "11011110110000011011110111101111011000001101111011000000000000000000000000011011110110000011011110111101111011000001101111011"; // 3번쨰
-        sb.append("1");
-
-        for (int i = 0; i < 20; i++) {
-            String str = sb.toString();
-            sb.setLength(0);
-
-            for (char c : str.toCharArray()) {
-                if (c == '1') {
-                    sb.append("11011");
-                } else {
-                    sb.append("00000");
-                }
-            }
-        }
-
-
-        System.out.println(sb.length());
-        System.out.println(sb.toString());
-        for (char c : sb.toString().toCharArray()) {
-            if (c == '1') cnt++;
-        }
-
-        System.out.println(cnt);
-
         /*
            문제 이해하기 :
            "1" => "11011"
@@ -89,5 +61,35 @@ public class PseudoCantorBitString {
              위 규칙 내용에 따라, 실질적으로 필요한 구간은 [l, r]까지 이기 때문에, 반복문을 이용하여 비트열을 찾다가, 비트열의 개수가 해당 인덱스보다 클 경우 반복문을 종료한다.
              (해당 구간 이후는 쓸모가 없기 때문에 더 찾을 필요가 없음)
         */
+
+        int answer = 0;
+        StringBuilder sb = new StringBuilder();
+        String finalStr = "";
+        String str = "";
+        sb.append("1");
+
+        while (true) {
+            if (sb.length() >= r) {
+                finalStr = sb.substring((int)l-1, (int)r);
+                break;
+            }
+
+            str = sb.toString();
+            sb.setLength(0);
+
+            for (char c : str.toCharArray()) {
+                if (c == '1') {
+                    sb.append("11011");
+                } else {
+                    sb.append("00000");
+                }
+            }
+        }
+
+        for (char c : finalStr.toCharArray()) {
+            if (c == '1') answer++;
+        }
+
+        System.out.println(answer);
     }
 }
