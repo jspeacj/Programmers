@@ -60,36 +60,35 @@ public class PseudoCantorBitString {
             문제 해결 방식 :
              위 규칙 내용에 따라, 실질적으로 필요한 구간은 [l, r]까지 이기 때문에, 반복문을 이용하여 비트열을 찾다가, 비트열의 개수가 해당 인덱스보다 클 경우 반복문을 종료한다.
              (해당 구간 이후는 쓸모가 없기 때문에 더 찾을 필요가 없음)
+             => 해당 방식으로 시도하니깐 메모리 초과가 발생함.
+
+             "n번쨰의 총 개수는 5(j)승이고, n번쨰의 "1"의 값은 4(k)승이다."
+             위 규칙을 참고한 상태로 주어진 r,l의값을 아래 방식을 이용하여 구한 값 (0부터 r까지의 1 개수) - (0부터 l까지의 1개수) 값이 정답이다.
+             (아래는 r값이 30일 경우를 기준으로 규칙을 설명한다.)
+             1. 주어진 r의 값이 5(j)승의 어느 사이에 있는지 찾는다. (ex. 주어진 r 값이 30일 경우 5(2) = 25 < r(30) < 5(3) = 125)
+             2. 주어진 r값 보다 더 큰 5(j)에서 j 값은 2가 되므로, n = 2일 떄 1의 개수를 rResult 값에 더해둔다.
+             3. 이떄 r값은 5자리가 더 남기때문에 해당 값을 기준으로 찾아야한다.
+
+             새로운 규칙 :
+             1. n번쨰 칸토어 비트열은 (n-1) + (n-1) + ("0" * 5(n)승) + (n-1) + (n-1)로 되어있다.
+             2. 즉 각 칸토어 비트열은 5개의 구역으로 나눌수가 있다.
+             3. 5개의 구역으로 나눌 경우 가운데 구역은 무조건 0밖에 없으며, n번쨰 칸토어 비
         */
 
+        /* 수학적 규칙이 필요해서 결국 다른 사람꺼 코드 참고함.. */
         int answer = 0;
-        StringBuilder sb = new StringBuilder();
-        String finalStr = "";
-        String str = "";
-        sb.append("1");
 
-        while (true) {
-            if (sb.length() >= r) {
-                finalStr = sb.substring((int)l-1, (int)r);
-                break;
-            }
-
-            str = sb.toString();
-            sb.setLength(0);
-
-            for (char c : str.toCharArray()) {
-                if (c == '1') {
-                    sb.append("11011");
-                } else {
-                    sb.append("00000");
-                }
-            }
-        }
-
-        for (char c : finalStr.toCharArray()) {
-            if (c == '1') answer++;
+        for (l--; l < r; l++) {
+            if (check(l)) answer++;
         }
 
         System.out.println(answer);
+    }
+
+    public static boolean check(long l) {
+        if (l < 5 && l != 2) return true;
+        if ((l - 2) % 5 == 0) return false;
+
+        return check(l / 5);
     }
 }
