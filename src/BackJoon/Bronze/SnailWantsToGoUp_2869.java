@@ -31,30 +31,48 @@ package BackJoon.Bronze;
     예제 출력 3
     999999901
  */
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class SnailWantsToGoUp_2869 {
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 
-        int now = 0;
-        int up = scan.nextInt();
-        int down = scan.nextInt();
-        int goal = scan.nextInt();
-        long cnt = 0; // 조건에 인풋값이 10억까지 주어지므로, 구해야하는 횟수가 21억이 최대한 int타입의 범위를 넘을 수 있기 때문에 long타입으로 지정
+        int up = Integer.parseInt(st.nextToken());
+        int down = Integer.parseInt(st.nextToken());
+        int goal = Integer.parseInt(st.nextToken());
+        long day = 0; // 조건에 인풋값이 10억까지 주어지므로, 구해야하는 횟수가 21억이 최대한 int타입의 범위를 넘을 수 있기 때문에 long타입으로 지정
 
-        /* 첫번째 풀이 : 시간초과 발생
-            while (now < goal) {
-            cnt++;
+        /* 첫번째 방법 : 시간 초과 발생
+        while (now < goal) {
+            day++;
             now += up;
             if (now >= goal) break; // 이미 정상을 올라갔을 경우, 미끄러지지 않는다고 조건에 나와있기 떄문에 바로 종료
             now -= down;
         }
-        */
+         */
 
-        // 두번째 풀이 : 주어진 예제에서 목표지점 V까지 걸리는 기간은 다음과 같이 유추할 수 있다. => 걸리는 기간(일) : 목표지점(V) - 올라갈 A미터 + 내려갈 B미터
-        int num = (up - down) > down ? down : (up - down);
-        cnt = goal - up + num;
-        System.out.println(cnt);
+        /*
+            두번째 풀이 :
+         1. 첫번째 시도 => 주어진 예제에서 목표지점 V까지 걸리는 기간은 다음과 같이 유추할 수 있다. => 걸리는 기간(일) : 목표지점(V) - 올라갈 A미터 + 내려갈 B미터
+         예제) 100 99 1000000000 => 999999901
+         반례) 6 1 8 => 2 (예상정답) < = > 8 - 6 + 1 = 3 (답이다름)
+
+         2. 두번쨰 시도 => 변수 k => 올라갈 높이 - 내려갈 높이 { 명칭 지정 : 올라갈 높이 : up, 내려갈 높이 : down, 목표 높이 : goal }
+            num = ((up - down) > down ? down : (up - down));
+            
+            cnt = (goal / k) + num
+            특이사항 :
+            예제1 : 6 1 8 => 2(예상정답) == (8/5) + (1) = 2
+            예제2:  100 99 1,000,000,000 => 999,999,901(예상정답) < = > (1,000,000,000 / 1) + (1) = 1,000,000,001
+         */
+
+        day = (goal - down) / (up - down);
+        if ((goal - down) % (up - down) != 0) day++;
+
+        System.out.println(day);
     }
 }
