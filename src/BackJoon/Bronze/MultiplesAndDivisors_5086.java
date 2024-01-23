@@ -47,7 +47,7 @@ public class MultiplesAndDivisors_5086 {
 
             if (a == 0 && b == 0) break;
             else if (b % a == 0) System.out.println("factor");
-            else if (a % b == 0) System.out.println("mulitple");
+            else if (a % b == 0) System.out.println("multiple");
             else System.out.println("neither");
         }
     }
