@@ -1,5 +1,7 @@
 package BackJoon.Bronze;
 
+import java.util.Scanner;
+
 public class MultiplesAndDivisors_5086 {
     public static void main(String[] args) {
         /*
@@ -30,10 +32,23 @@ public class MultiplesAndDivisors_5086 {
             32 4
             17 5
             0 0
+
             예제 출력 1
             factor
             multiple
             neither
          */
+
+        Scanner scan = new Scanner(System.in);
+
+        while (true) {
+            int a = scan.nextInt();
+            int b = scan.nextInt();
+
+            if (a == 0 && b == 0) break;
+            else if (b % a == 0) System.out.println("factor");
+            else if (a % b == 0) System.out.println("mulitple");
+            else System.out.println("neither");
+        }
     }
 }
