@@ -48,12 +48,41 @@ public class SumOfDivisors_9506 {
         int middle = 0; // 중간 값을 담아두기 위한 변수
 
         Scanner scan = new Scanner(System.in);
+        StringBuilder sb = new StringBuilder();
+        boolean flag = false;
 
         while (true) {
+            flag = false;
+            sb.setLength(0); // 초기화
             int sum = 0;
             int num = scan.nextInt();
             if (num == -1) break;
 
+            sb.append(num + " = ");
+
+            for (int i = 1; i <= num / 2; i++) {
+                if (num % i == 0) {
+                    sum += i;
+                    if (i == (num / 2)) {
+                        sb.append(i);
+                    } else {
+                        sb.append(i + " + ");
+                    }
+                }
+
+                if (sum > num) {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (sum < num) flag = true;
+
+            if (flag) {
+                System.out.println(num + " is NOT perfect.");
+            } else {
+                System.out.println(sb.toString());
+            }
         }
     }
 }
