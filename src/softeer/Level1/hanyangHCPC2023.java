@@ -1,11 +1,11 @@
-package softeer;
+package softeer.Level1;
 
 import java.util.Scanner;
 
 public class hanyangHCPC2023 {
     public static void main(String[] args) {
-        /*
-            [한양대 HCPC 2023] 개표
+        /*  Level 1
+            [한양대 HCPC 2023 ] 개표
             투표가 끝난 뒤에는 개표를 해야 한다. 일반적으로 개표는 칠판을 사용하며, 한 표가 나올 때마다 한 획을 추가로 긋는 방식을 사용한다.
             이 문제에서는 다음과 같은 방식으로 개표를 진행한다.
             - 모든 후보자는 0표, 즉 아무것도 그려져 있지 않는 상태로 시작한다.
