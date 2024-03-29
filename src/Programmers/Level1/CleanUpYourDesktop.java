@@ -1,5 +1,7 @@
 package Programmers.Level1;
 
+import java.util.Arrays;
+
 public class CleanUpYourDesktop {
     public static void main(String[] args) {
         /*
@@ -77,7 +79,7 @@ public class CleanUpYourDesktop {
          */
 
         /* TC 1 result : [0, 1, 3, 4] */
-        String[] wallpaper = {".#...", "..#..", "...#."};
+        //String[] wallpaper = {".#...", "..#..", "...#."};
 
         /* TC 2 result : [1, 3, 5, 8] */
         //String[] wallpaper = {"..........", ".....#....", "......##..", "...##.....", "....#....."};
@@ -86,16 +88,31 @@ public class CleanUpYourDesktop {
         //String[] wallpaper = {".##...##.", "#..#.#..#", "#...#...#", ".#.....#.", "..#...#..", "...#.#...", "....#...."};
 
         /* TC 4 result : [1, 0, 2, 1] */
-        //String[] wallpaper = {"..", "#."};
+        String[] wallpaper = {"..", "#."};
+
+        /*
+            규칙 :
+            1. 시작점인경우 해당 좌표보다 행,열 값이 작은 좌표에 파일이 존재하면 안된다.
+            2. 끝점인경우 해당 좌표보다 행,열 값이 큰 좌표에 파일이 존재하면 안된다.
+         */
 
         int minRow = 51;
         int maxRow = 0;
         int minCol = 51;
         int maxCol = 0;
-        int[][] desktop = new int[wallpaper.length][wallpaper[0].length()];
 
-        
+        for (int i = 0; i < wallpaper.length; i++) {
+            char[] desktop = wallpaper[i].toCharArray();
+            for (int j = 0; j < desktop.length; j++) {
+                if ((desktop[j]) == '#') {
+                    if (i < minRow) minRow = i;
+                    if (i + 1 > maxRow) maxRow = i + 1;
+                    if (j < minCol) minCol = j;
+                    if (j + 1> maxCol) maxCol = j + 1;
+                }
+            }
+        }
 
-
+        System.out.println(Arrays.toString(new int[]{minRow, minCol, maxRow, maxCol}));
     }
 }
