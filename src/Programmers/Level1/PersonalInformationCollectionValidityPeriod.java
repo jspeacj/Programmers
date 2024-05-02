@@ -1,6 +1,10 @@
 package Programmers.Level1;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -162,7 +166,7 @@ public class PersonalInformationCollectionValidityPeriod {
             month = month + (expDate % 12);
         }
 
-        year += expDate / 12;
+        year += (expDate / 12);
 
         date[0] = String.valueOf(year);
         date[1] = String.valueOf(month);
@@ -170,22 +174,14 @@ public class PersonalInformationCollectionValidityPeriod {
     }
 
     public static boolean checkValidity(String[] todayDate, String[] date) {
-        /*
-        파기대상을 찾아야하므로 파기안되는 대상만 골라서 false로 체크
-        파기안되는대상 : 지정된 년도가 오늘 년도보다 크거나 같아야하며,
-         */
-        int todayYear = Integer.parseInt(todayDate[0]);
-        int todayMonth = Integer.parseInt(todayDate[1]);
-        int todayDay = Integer.parseInt(todayDate[2]);
+        try {
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = format.parse(todayDate[0] + "-" + todayDate[1] + "-" + todayDate[2]);
+            Date expDate = format.parse(date[0] + "-" + date[1] + "-" + date[2]);
 
-        if (Integer.parseInt(date[0]) >= todayYear) {
-            if (Integer.parseInt(date[1]) >= todayMonth) {
-                if (Integer.parseInt(date[2]) >= todayDay) {
-                    return false;
-                }
-            }
+            return expDate.before(today) ? true : false;
+        } catch (ParseException ex) {
+            return false;
         }
-
-        return true;
     }
 }
