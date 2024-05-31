@@ -1,6 +1,11 @@
 package Programmers.Level1;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public class MostReceivedGift {
+    static Map<String, Integer> giftScore = new HashMap<>();
+    static Map<String, Map<String, Integer>>  people = new HashMap<>();
     public static void main(String[] args) {
         /*
             가장 많이 받은 선물 (2024 KAKAO WINTER INTERNSHIP)
@@ -88,17 +93,56 @@ public class MostReceivedGift {
          */
 
         /* TC 1 result : 2 */
-        String[] friends = {"muzi", "ryan", "frodo", "neo"};
-        String[] gifts = {"muzi frodo", "muzi frodo", "ryan muzi", "ryan muzi", "ryan muzi", "frodo muzi", "frodo ryan", "neo muzi"};
+        //String[] friends = {"muzi", "ryan", "frodo", "neo"};
+        //String[] gifts = {"muzi frodo", "muzi frodo", "ryan muzi", "ryan muzi", "ryan muzi", "frodo muzi", "frodo ryan", "neo muzi"};
 
         /* TC 2 result : 4 */
         //String[] friends = {"joy", "brad", "alessandro", "conan", "david"};
         //String[] gifts = {"alessandro brad", "alessandro joy", "alessandro conan", "david alessandro", "alessandro david"};
 
         /* TC 3 result : 0 */
-        //String[] friends = {"a", "b", "c"};
-        //String[] gifts = {"a b", "b a", "c a", "a c", "a c", "c a"};
+        String[] friends = {"a", "b", "c"};
+        String[] gifts = {"a b", "b a", "c a", "a c", "a c", "c a"};
 
+        sendGift(gifts);
+        System.out.println(maxGiftCount(friends));
+    }
 
+    public static void sendGift(String[] gifts) {
+        for (int i = 0; i < gifts.length; i++) {
+            String[] gift = gifts[i].split(" ");
+            giftScore.put(gift[0], giftScore.getOrDefault(gift[0], 0) + 1); // 준 사람
+            giftScore.put(gift[1], giftScore.getOrDefault(gift[1], 0) - 1); // 받은 사람
+            Map<String, Integer> giftList = people.getOrDefault(gift[0], new HashMap<>());
+            giftList.put(gift[1], giftList.getOrDefault(gift[1], 0) + 1);
+            people.put(gift[0], giftList);
+        }
+    }
+
+    public static int maxGiftCount(String[] friends) {
+        int maxGiftCount = 0;
+        int sendCount;
+        int getCount;
+        int sendScore;
+        int getScore;
+        int chkCnt;
+
+        for (int i = 0; i < friends.length; i++) {
+            String sendFriend = friends[i];
+            chkCnt = 0;
+            for (int j = 0; j < friends.length; j++) {
+                if (i == j) continue;
+                String getFriend = friends[j];
+                sendCount = people.getOrDefault(sendFriend,new HashMap<>()).getOrDefault(getFriend, 0); //보낸적이 없으면 0
+                getCount = people.getOrDefault(getFriend,new HashMap<>()).getOrDefault(sendFriend, 0); // 받은적이 없으면 0
+                sendScore = giftScore.getOrDefault(sendFriend, 0);
+                getScore = giftScore.getOrDefault(getFriend, 0);
+                if (sendCount > getCount) chkCnt++;
+                else if (sendCount == getCount && sendScore > getScore) chkCnt++;
+            }
+            if (chkCnt > maxGiftCount) maxGiftCount = chkCnt;
+        }
+
+        return maxGiftCount;
     }
 }
