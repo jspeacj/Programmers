@@ -104,6 +104,9 @@ public class OilDrilling {
             for (int j = 0; j <land[i].length; j++) {
                 if (oilLand[i][j] == nowOil) continue; // 이미 이전 행,열와 석유가 연결되어 있어서 포함되어 있기 때문에 스킵
 
+                if (land[i][j] == 1) {
+
+                }
 
             }
             max = Math.max(max, cnt); // 이전 최대 석유량과 현재 개수를 비교하여 최대 석유량 설정
