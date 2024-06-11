@@ -1,6 +1,13 @@
 package Programmers.Level2;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class OilDrilling {
+    public static int cnt = 0;
+    public static Map<Integer,Integer> oilLump = new HashMap<>();
     public static void main(String[] args) {
         /*
             [PCCP 기출문제] 2번 / 석유 시추
@@ -78,10 +85,10 @@ public class OilDrilling {
          */
 
         /* TC 1 result : 9 */
-        int[][] land = {{0, 0, 0, 1, 1, 1, 0, 0}, {0, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 0, 0, 0, 1, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0}, {1, 1, 1, 0, 0, 0, 1, 1}};
+        //int[][] land = {{0, 0, 0, 1, 1, 1, 0, 0}, {0, 0, 0, 0, 1, 1, 0, 0}, {1, 1, 0, 0, 0, 1, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0}, {1, 1, 1, 0, 0, 0, 1, 1}};
         
         /* TC 2 reuslt : 16*/
-        //int[][] land = {{1, 0, 1, 0, 1, 1}, {1, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 0, 1}, {1, 0, 0, 1, 0, 0}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 0}, {1, 1, 1, 1, 1, 1}};
+        int[][] land = {{1, 0, 1, 0, 1, 1}, {1, 0, 1, 0, 0, 0}, {1, 0, 1, 0, 0, 1}, {1, 0, 0, 1, 0, 0}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 0}, {1, 1, 1, 1, 1, 1}};
 
         /* 문제 풀이 방안 :
 
@@ -94,22 +101,87 @@ public class OilDrilling {
         5. 모든 행에 시추관을 설치했을 떄 최대 석유량을 구한 뒤, 최대 값을 반환한다.
         */
 
+        /* Try 1 정확성 9/9, 효율성 : 2/6 : 73.3 / 100
+        각 열을 기준으로 이중 반복문을 이용하여 수행했으나, 효율성 측면에서 실패
+
         int[][] oilLand = new int[land.length][land[0].length];
         int max = 0; //최대 석유량
-        int cnt = 0; //현재 행으로 설치한 시추관 기준 석유량 개수
         int nowOil; // 현재 행 + 1 값을 가지는 변수 선언
         
-        for (int i = 0; i < land.length; i++) {
-            nowOil = i + 1; // 이전 [행,열]기준으로 석유가 연결되어 있어 이미 포함되어 있는 경우 스킵 처리하기 위해 선언
-            for (int j = 0; j <land[i].length; j++) {
-                if (oilLand[i][j] == nowOil) continue; // 이미 이전 행,열와 석유가 연결되어 있어서 포함되어 있기 때문에 스킵
+        for (int col = 0; col < land[0].length; col++) { // 시추관은 수직(열)을 기준으로 설치가 되기 떄문에 반복문을 열(col) 기준으로 수행
+            cnt = 0;
+            nowOil = col + 1; // 이전 [행,열]기준으로 석유가 연결되어 있어 이미 포함되어 있는 경우 스킵 처리하기 위해 선언
+            for (int row = 0; row < land.length; row++) {
+                if (oilLand[row][col] == nowOil) continue; // 이미 이전 행,열와 석유가 연결되어 있어서 포함되어 있기 때문에 스킵
 
-                if (land[i][j] == 1) {
-
+                if (land[row][col] == 1) {
+                    settingOil(land, oilLand, nowOil, row, col); // 현재 위치의 오일 및 붙어있는 땅의 석유도 같이 세팅
                 }
-
             }
             max = Math.max(max, cnt); // 이전 최대 석유량과 현재 개수를 비교하여 최대 석유량 설정
         }
+        System.out.println(max);
+         */
+
+        /* Try 2
+         미리 각 오일의 덩어리 별로 Map에다가 담아둔 뒤, 이후 각 열을 기준으로 시추관을 설치할 떄, 오일 덩어리의 총합을 계산한다.
+         */
+        init(land);
+        System.out.println(findMax(land));
+    }
+
+    public static void settingOil (int[][] land, int[][] oilLand, int nowOil, int row, int col) {
+        if (land[row][col] != 1 || oilLand[row][col] == nowOil) return;
+
+        oilLand[row][col] = nowOil;
+        cnt++;
+        if (row > 0) settingOil(land, oilLand, nowOil, row - 1, col);
+        if (row < land.length - 1) settingOil(land, oilLand, nowOil, row + 1, col);
+        if (col > 0) settingOil(land, oilLand, nowOil, row, col - 1);
+        if (col < land[row].length - 1) settingOil(land, oilLand, nowOil, row, col + 1);
+    }
+
+    public static void init(int[][] land) {
+        int lump = 10; // 현재 이차원 정수 배열 land 변수는 0(오일 X) 또는 1(오일 O)로 이루어져 있으므로 키 값을 10부터 시작
+        for (int row = 0 ; row < land.length; row++) {
+            for (int col = 0; col < land[0].length; col++) {
+                if (land[row][col] != 1) continue;
+
+                cnt = 0;
+                settingOil(land, lump, row ,col);
+                oilLump.put(lump, cnt); // 해당 오일 덩어리 개수를 저장
+                lump++; // 다음 덩어리 명칭
+            }
+        }
+    }
+
+    public static void settingOil (int[][] land, int lump, int row, int col) {
+        if (land[row][col] != 1) return;
+
+        land[row][col] = lump;
+        cnt++;
+        if (row > 0) settingOil(land, lump, row - 1, col);
+        if (row < land.length - 1) settingOil(land, lump, row + 1, col);
+        if (col > 0) settingOil(land, lump, row, col - 1);
+        if (col < land[row].length - 1) settingOil(land, lump, row, col + 1);
+    }
+
+    public static int findMax (int[][] land) {
+        int max = 0;
+        int sum = 0;
+        Set<Integer> oilList = new HashSet<>(); // 중복을 제외한 오일 덩어리 그룹 번호를 저장하기 위한 변수 선언
+
+        for (int col = 0; col < land[0].length; col++) {
+            for (int row = 0; row < land.length; row++) {
+                if (land[row][col] != 0) oilList.add(land[row][col]);
+            }
+
+            for (int num : oilList) sum += oilLump.get(num);
+            max = Math.max(max, sum);
+            sum = 0;
+            oilList.clear(); // 다음 열로 시추관을 설치하기 전에 목록 초기화
+        }
+
+        return max;
     }
 }
