@@ -128,7 +128,7 @@ public class OilDrilling {
 
         int[][] oilLand = new int[land.length][land[0].length];
         int max = 0; //최대 석유량
-        int nowOil; // 현재 행 + 1 값을 가지는 변수 선언
+        int nowOil; // 현재 행 + 1 값을 가지는 변수 선언.
         
         for (int col = 0; col < land[0].length; col++) { // 시추관은 수직(열)을 기준으로 설치가 되기 떄문에 반복문을 열(col) 기준으로 수행
             cnt = 0;
