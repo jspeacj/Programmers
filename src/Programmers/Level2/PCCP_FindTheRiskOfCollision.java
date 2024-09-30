@@ -1,13 +1,15 @@
 package Programmers.Level2;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 
 public class PCCP_FindTheRiskOfCollision {
-    public static int crashCnt = 0;
-    public static boolean[] arrive;
-    public static Map<Integer, Integer[]> location = new HashMap<>();
-    public static Map<Integer, Integer> checkCrash = new HashMap<>();
+    public static int crashCnt = 0; // 충돌 횟수
+    public static boolean[] arrive; // 각 로봇의 최종 포인트까지 진행 상황
+    public static Map<Integer, Integer[]> location = new HashMap<>(); // 각 로봇들의 현재 위치(x, y)
+    public static Map<Integer, Integer[]> chkPoint = new HashMap<>(); // 각 로봇들의 다음 목표 포인트의 위치 (x, y)
+    public static Map<Integer, Integer> checkCrash = new HashMap<>(); // 모든 로봇이 이동한 뒤 충돌 지점이 있는지 체크
     public static void main(String[] args) {
         /*
             [PCCP 기출문제] 3번 / 충돌위험 찾기
@@ -71,16 +73,16 @@ public class PCCP_FindTheRiskOfCollision {
          */
 
         /* TC 1 result :  1 */
-        int[][] points = {{3, 2}, {6, 4}, {4, 7}, {1, 4}};
-        int[][] routes = {{4, 2}, {1, 3}, {2, 4}};
+        //int[][] points = {{3, 2}, {6, 4}, {4, 7}, {1, 4}};
+        //int[][] routes = {{4, 2}, {1, 3}, {2, 4}};
 
         /* TC 2 result :  9 */
         //int[][] points = {{3, 2}, {6, 4}, {4, 7}, {1, 4}};
         //int[][] routes = {{4, 2}, {1, 3}, {4, 2}, {4, 3}};
 
         /* TC 3 result :  0 */
-        //int[][] points = {{2, 2}, {2, 3}, {2, 7}, {6, 6}, {5, 2}};
-        //int[][] routes = {{2, 3, 4, 5}, {1, 3, 4, 5}};
+        int[][] points = {{2, 2}, {2, 3}, {2, 7}, {6, 6}, {5, 2}};
+        int[][] routes = {{2, 3, 4, 5}, {1, 3, 4, 5}};
 
         /* 풀이 방법 :
             모든 로봇이 요구한 모든 운송지점 포인트에 도착했을 경우 종료한다.
@@ -95,10 +97,15 @@ public class PCCP_FindTheRiskOfCollision {
                          각 로봇들의 x좌표 기준으로 value에 해당하는 y값이 있는지 getOrDefault함수를 이용하여 체크하며 결과 값에 따라 아래 로직 진행
                          1. value 값이 없을 경우 : 현재 로봇 기준 해당 좌표에는 어떠한 로봇도 없는 상황이라 충돌이 아니며 해당 값에 y좌표 값을 넣은 다음 다음 로봇으로 진행
                          2. value 값이 존재할 경우 : 이미 value값이 존재할 경우 해당 좌표에는 다른 로봇이 존재한 상황이기 때문에 충돌 상황이므로 충돌 횟수 변수인 crashCnt값을 증가시키고 반복문 종료
-         
-
         */
+
+
         init(points, routes);
+        for (int key : location.keySet()) {
+            System.out.println(key + "로봇 시작 지점 : " + Arrays.toString(location.get(key)));
+            System.out.println(key + "로봇 목표 지점 : " + Arrays.toString(chkPoint.get(key)));
+        }
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         move(points, routes);
         System.out.println(crashCnt);
     }
@@ -107,23 +114,83 @@ public class PCCP_FindTheRiskOfCollision {
         arrive = new boolean[routes.length];
         for (int i = 0; i < routes.length; i++) {
             int pointX = routes[i][0] - 1;
-            location.put(i, new Integer[]{points[pointX][0],points[pointX][1]});
+            int nextPointX = routes[i][1] - 1;
+            location.put(i, new Integer[]{points[pointX][0], points[pointX][1]});
+            chkPoint.put(i, new Integer[]{points[nextPointX][0], points[nextPointX][1], 1}); // 다음 목표 포인트 좌표 x , 다음 목표 포인트 좌표 x, routes 인덱스 위치
+        }
+
+        // 0초일때에도 충돌인지 체크
+        for (int i = 0; i < arrive.length; i++) {
+            int locationX = location.get(i)[0];
+            int locationY = location.get(i)[1];
+            location.put(i, new Integer[]{locationX, locationY});
+            if (checkCrash.getOrDefault(locationX, -1) == -500) { // 500일 경우 해당 좌표는 이미 움직일때 2대 이상이 충돌할 좌표이며 충돌 횟수에 포함했으므로 스킵
+                continue;
+            } else if (checkCrash.getOrDefault(locationX, -1) == locationY) {
+                crashCnt++; // 좌표 값은 0이상이기 떄문에 -1이 아니면서 x, y좌표로 이미 할당되어 있을 경우 다른 로봇이 이미 해당 좌표에 있다는 의미로 충돌된 상태
+                checkCrash.put(locationX, -500); // 이미 해당 이동 때, 충돌횟수에 포함시켰으므로 중복 횟수로 포함안되도록 -500으로 값 할당 처리
+            } else { // 해당 좌표에 어느 로봇도 방문하지 않은 상태이므로 해당 좌표 값 할당
+                checkCrash.put(locationX, locationY);
+            }
         }
     }
 
     public static void move(int[][] points, int[][] routes) {
-        boolean checkCrash = false;
-        boolean finished = true;
-        while (finished) {
-
-
+        boolean finished = false;
+        while (!finished) {
+            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+            checkCrash.clear(); // 다음 이동지점 체크 부분을 체크하기 위해 기존 저장한 내역들 초기화
+            moveStep(points, routes); // 로봇 이동
+            chkArrivePoint(points, routes); // 로봇이 목표 포인트로 도착 했는지 체크
+            
             // 아직 운송이 끝나지 않는 로봇이 하나라도 존재할 경우 다음으로 진행
-            for (int i = 0; i < arrive.length; i++) {
-                if (!arrive[i]) {
-                    finished = true;
-                    break;
-                } else {
-                    finished = false;
+            for (boolean goal : arrive) {
+                finished = goal ? true : false;
+                if (!finished) break;
+            }
+
+            System.out.println("이동 종료 결과 ");
+            System.out.println("충돌 횟수 : " + crashCnt);
+            for (int key : location.keySet()) {
+                System.out.println(key + "이동 후 로봇 시작 지점 : " + Arrays.toString(location.get(key)));
+                System.out.println(key + "이동 후 로봇 목표 지점 : " + Arrays.toString(chkPoint.get(key)));
+            }
+        }
+    }
+
+    public static void moveStep(int[][] points, int[][] routes) {
+        for (int i = 0; i < arrive.length; i++) {
+            if (arrive[i]) continue;
+            int locationX = location.get(i)[0];
+            int locationY = location.get(i)[1];
+            int chkPntX = chkPoint.get(i)[0];
+            int chkPntY = chkPoint.get(i)[1];
+            if (locationX != chkPntX) { // x 좌표가 동일하지 않을 경우 x좌표 먼저 일치하도록 이동
+                locationX = locationX > chkPntX ? locationX - 1 : locationX + 1; // 목표 포인트보다 크면 감소, 작으면 증가
+            } else { // x 좌표가 동일할 경우 y 좌표를 이동
+                locationY = locationY > chkPntY ? locationY - 1 : locationY + 1; // 목표 포인트보다 크면 감소, 작으면 증가
+            }
+            location.put(i, new Integer[]{locationX, locationY});
+            if (checkCrash.getOrDefault(locationX, -1) == -500) { // 500일 경우 해당 좌표는 이미 움직일때 2대 이상이 충돌할 좌표이며 충돌 횟수에 포함했으므로 스킵
+                continue;
+            } else if (checkCrash.getOrDefault(locationX, -1) == locationY) {
+                crashCnt++; // 좌표 값은 0이상이기 떄문에 -1이 아니면서 x, y좌표로 이미 할당되어 있을 경우 다른 로봇이 이미 해당 좌표에 있다는 의미로 충돌된 상태
+                checkCrash.put(locationX, -500); // 이미 해당 이동 때, 충돌횟수에 포함시켰으므로 중복 횟수로 포함안되도록 -500으로 값 할당 처리
+            } else { // 해당 좌표에 어느 로봇도 방문하지 않은 상태이므로 해당 좌표 값 할당
+                checkCrash.put(locationX, locationY);
+            }
+        }
+    }
+    public static void chkArrivePoint(int[][] points, int[][] routes) {
+        for (int i = 0; i < arrive.length; i++) {
+            if (arrive[i]) continue;
+            if (location.get(i)[0] == chkPoint.get(i)[0] && location.get(i)[1] == chkPoint.get(i)[1]) { // 목표 포인트에 도착했을 경우
+                if (routes[i].length - 1 >= chkPoint.get(i)[2]) { // 마지막 체크 포인트에 도착했을 경우
+                    arrive[i] = true;
+                } else { // 다음 체크 포인트가 존재할 경우 다음 체크 포인트로 설정
+                    int nextIndex = chkPoint.get(i)[2] + 1;
+                    int nextPoint = routes[i][nextIndex];
+                    chkPoint.put(i, new Integer[]{points[nextPoint][0], points[nextPoint][1], nextIndex});
                 }
             }
         }
