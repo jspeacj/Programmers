@@ -1,5 +1,8 @@
 package Programmers.Level1;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class PCCEPastExamQuestions10_Park {
     public static void main(String[] args) {
         /*
@@ -67,5 +70,28 @@ public class PCCEPastExamQuestions10_Park {
             4.2 정사각형에 해당하는 값이 존재하지 않을 경우 => mats의 다음 값을 기준으로 다시 체크
             4.3 최종적으로 mats에 값들 중 정사각형을 만들 수 있는 값이 하나도 존재하지 않을 경우 => -1 반환하여 종료
         */
+
+        int result = -1;
+        Integer[] IntegerMats = Arrays.stream(mats).boxed().toArray(Integer[]::new);
+        Arrays.sort(IntegerMats, Collections.reverseOrder());
+        for (int num : IntegerMats) {
+            if (chkSquare(park, num)) {
+                result = num;
+                break;
+            }
+        }
+
+        System.out.println(result);
+    }
+
+    public static boolean chkSquare(String[][] park, int num) {
+        for (int i = 0; i < park.length; i++) {
+            for (int j = 0; j < park[i].length; j++) {
+                if (!"-1".equals(park[i][j])) break; // 비어있는 공간이 아닐 경우 스킵
+                if (i + num > park.length) break;
+            }
+        }
+
+        return false;
     }
 }
