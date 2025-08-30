@@ -87,11 +87,28 @@ public class PCCEPastExamQuestions10_Park {
     public static boolean chkSquare(String[][] park, int num) {
         for (int i = 0; i < park.length; i++) {
             for (int j = 0; j < park[i].length; j++) {
-                if (!"-1".equals(park[i][j])) break; // 비어있는 공간이 아닐 경우 스킵
-                if (i + num > park.length) break;
+                if (!"-1".equals(park[i][j])) continue; // 비어있는 공간이 아닐 경우 스킵
+                if (i + num > park.length) continue; // 현재 시작점 좌표 기준 필요한 공간을 합친 길이가 행의 길이를 초과할 경우 체크할 필요가 없기 때문에 종료
+                if (j + num > park[i].length) continue; // 현재 시작점 좌표 기준 필요한 공간을 합친 길이가 열의 길이를 초과할 경우 체크할 필요가 없기 때문에 종료
+
+                if (chkSpace(park, i, j, num)) { // 시작 좌표 기준 체크하며, 지민의 돗자리를 세팅할 수 있는 공간이 존재하는지 체크
+                    return true; // 한변의 길이가 num인 돗자리를 세팅할 수 있는 공간이 존재하기 때문에 해당 메서드 종료
+                }
             }
         }
 
         return false;
+    }
+
+    public static boolean chkSpace(String[][] park, int i, int j, int num) {
+        for (int row = i; row < i + num; row++) { // 시작 행,열 기준 돗자리 한변의 길이인 num까지 체크
+            for (int col = j; col < j + num; col++) {
+                if (!"-1".equals(park[row][col])) { // 한 곳이라도 다른 사람의 돗자리 영역이 존재할 경우 돗자리를 세팅할 수 없기 떄문에 세팅 불가로 종료
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
