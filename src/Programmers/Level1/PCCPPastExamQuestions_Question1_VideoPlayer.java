@@ -76,5 +76,105 @@ public class PCCPPastExamQuestions_Question1_VideoPlayer {
         //String op_start = "00:15";
         //String op_end = "04:07";
         //String[] commands = {"next"};
+
+        int[] posArr = convertHrMi(pos);
+        int[] opStartArr = convertHrMi(op_start);
+        int[] opEndArr = convertHrMi(op_end);
+        int[] videoLenArr = convertHrMi(video_len);
+
+        for (String command : commands) {
+            if (chkOp(posArr, opStartArr, opEndArr)) {
+                posArr[0] = opEndArr[0];
+                posArr[1] = opEndArr[1];
+            }
+
+            applyCommand(posArr, opStartArr, opEndArr, videoLenArr, command);
+
+            // 이동 이후 오프닝 구간인지 한번 더 체크
+            if (chkOp(posArr, opStartArr, opEndArr)) {
+                posArr[0] = opEndArr[0];
+                posArr[1] = opEndArr[1];
+            }
+        }
+
+        System.out.println(result(posArr));
+    }
+
+    public static boolean chkOp (int[] posArr, int[] opStartArr, int[] opEndArr) {
+        boolean skipOp = false;
+
+        // op_start <= pos <= op_end일 경우 true 반환
+        if (chkTime(posArr, opStartArr, true) && chkTime(opEndArr, posArr, true)) skipOp = true;
+
+        return skipOp;
+    }
+
+    public static int[] convertHrMi(String str) {
+        String[] strArr = str.split("");
+        int hour = Integer.parseInt(strArr[0] + strArr[1]);
+        int minute = Integer.parseInt(strArr[3] + strArr[4]);
+
+        return new int[]{hour, minute};
+    }
+
+    public static boolean chkTime(int[] currentTime, int[] chkTime, boolean equals) {
+        boolean chkFlag = false;
+        if (currentTime[0] > chkTime[0]) {
+            chkFlag = true;
+        } else if (currentTime[0] == chkTime[0]) {
+            if (equals) { // currentTime >= chkTime일 경우 true, 이외 false
+                if (currentTime[1] >= chkTime[1]) chkFlag = true;
+            } else { // currentTime > chkTime일 경우 true, 이외 false
+                if (currentTime[1] > chkTime[1]) chkFlag = true;
+            }
+        }
+
+        return chkFlag;
+    }
+
+    public static void applyCommand(int[] posArr, int[] opStartArr, int[] opEndArr, int[] videoLenArr, String command) {
+        if ("next".equals(command)) { // next : + 10
+            if (chkTime(posArr, videoLenArr, false)) return; // 이미 마지막 시간대일 경우 처리 없이 종료
+
+            if (posArr[1] + 10 >= 60) {
+                posArr[0]++;
+                posArr[1] -= 50;
+            } else {
+                posArr[1] += 10;
+            }
+
+            if (chkTime(posArr, videoLenArr, false)) { // 동영상 시간대보다 클 경우 동영상 마지막 시간대로 적용한다.
+                posArr[0] = videoLenArr[0];
+                posArr[1] = videoLenArr[1];
+            }
+        } else { // prev : - 10
+            posArr[1] -= 10;
+            if (posArr[1] < 0) {
+                if (posArr[0] > 0) {
+                    posArr[0]--;
+                    posArr[1] += 60;
+                } else { // hour, minute 모두 0보다 작을때 처음 위치(0)로 이동
+                    posArr[0] = 0;
+                    posArr[1] = 0;
+                }
+            }
+        }
+    }
+
+    public static String result(int[] posArr) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < posArr.length; i++) {
+            if (posArr[i] >= 10) {
+                sb.append(posArr[i]);
+            } else if (posArr[i] > 0) {
+                sb.append("0" + posArr[i]);
+            } else {
+                sb.append("00");
+            }
+            if (i == 0) sb.insert(2, ":");
+        }
+
+        return sb.toString();
     }
 }
