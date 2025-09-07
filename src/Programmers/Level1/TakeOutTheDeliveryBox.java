@@ -1,5 +1,9 @@
 package Programmers.Level1;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 public class TakeOutTheDeliveryBox {
     public static void main(String[] args) {
         /*
@@ -54,22 +58,22 @@ public class TakeOutTheDeliveryBox {
          */
 
         /* TC 1 result : 3 */
-        int n = 22;
-        int w = 6;
-        int num = 8;
+        //int n = 22;
+        //int w = 6;
+        //int num = 8;
 
         /* TC 2 result : 4 */
-        //int n = 13;
-        //int w = 3;
-        //int num = 6;
+        int n = 13;
+        int w = 3;
+        int num = 6;
 
         /*
             규칙 찾기 :
-            1. 각 위치 순번마다 더해지는 값이 홀수와 짝수 기준으로 동일하다
-            ?
-            2. 첫번쨰의 홀수 증가 값 : 2n -1, 짝수 증가 값 : +1
-            3. 두번쨰의 홀수 증가 값 :
-            ?
+            1. 첫번쨰의 홀수 증가 값 : (n-1) + (n - 0) = 5 + 6 = 11
+            2. 두번쨰의 홀수 증가 값 : (n-2) + (n - 1) = 4 + 5 = 9
+            3. 세번재의 홀수 증가 값 : (n-3) + (n - 2) = 3 + 4 = 7
+            ...
+
 
             TC 1 :
             첫번쨰 : 1, 12, 13, 24, 25 (+11, +1, +11, +1)
@@ -90,5 +94,48 @@ public class TakeOutTheDeliveryBox {
             두번쨰 : 2, 5, 8, 11, 14 (+3, +3, +3, +3)
             세번쨰 : 3, 4, 9, 10, 15 (+1, +5, +1, +5)
         */
+        Map<Integer, Stack<Integer>> map = new HashMap<>();
+        int answer = 0;
+        int location = boxSetting(map, n, w, num);
+        Stack<Integer> boxList = map.get(location);
+        while (!boxList.isEmpty()) {
+            answer++;
+            if (boxList.pop() == num) break;
+        }
+
+        System.out.println(answer);
+    }
+
+    public static int boxSetting(Map<Integer, Stack<Integer>> map, int n, int w, int num) {
+        int cnt = 1;
+        int location = 0;
+        boolean flag = true;
+        while (true) {
+            if (cnt > n) break;
+
+            if (flag) {
+                flag = false;
+                for (int i = 1; i <= w; i++) {
+                    addBox(map, i, cnt);
+                    if (cnt == num) location = i;
+                    if (++cnt > n) break;
+                }
+            } else {
+                flag = true;
+                for (int j = w; j > 0; j--) {
+                    addBox(map, j, cnt);
+                    if (cnt == num) location = j;
+                    if (++cnt > n) break;
+                }
+            }
+        }
+
+        return location;
+    }
+
+    public static void addBox(Map<Integer, Stack<Integer>> map, int key, int cnt) {
+        Stack<Integer> boxList = map.getOrDefault(key, new Stack<>());
+        boxList.push(cnt);
+        map.put(key, boxList);
     }
 }
