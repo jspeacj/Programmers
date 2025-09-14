@@ -1,10 +1,13 @@
 package Programmers.Level2;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CrackTheSecretCode {
+    public static Set<String> secretCodeList = new HashSet<>();
+    public static boolean[][] visited;
+    public static Map<Integer, Boolean> secretCodeMap = new HashMap<>();
+    public static StringBuilder sb = new StringBuilder();
+    public static int test = 0;
     public static void main(String[] args) {
         /*  비밀 코드 해독 (2025 프로그래머스 코드챌린지 1차 예선)
             문제 설명
@@ -112,13 +115,123 @@ public class CrackTheSecretCode {
             1. q 배열 길이만큼 반복문 수행
             2.
 
+            각 일차원 배열마다 시스템 응답개수에 맞는 모든 경우의 수를 각각 구한 뒤, 중복되지 않는 값으로 서로 조합한다?
+
         */
 
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(1, false);
-        System.out.println(map.size());
-        map.put(1, false);
-        map.put(2, false);
-        System.out.println(map.size());
+        visited = new boolean[q.length][5];
+        for (int i = 0; i < q.length; i++) {
+            reset();
+            if (i == q.length-1) {
+                if (ans[i] == 5) { // 배열 마지막 인덱스 입력 답에 대한 시스템 응답이 5개로 모두 응답값일 경우 리스트에 포함시킨다.
+                    for (int num : q[i]) secretCodeMap.put(num, true);
+                    addSecretCodeList();
+                }
+            } else {
+                findSecretCode(q, ans, i, 0);
+            }
+        }
+
+        System.out.println(secretCodeList.size());
+    }
+
+    public static void reset() {
+        for (int i = 0; i < visited.length; i++) {
+            Arrays.fill(visited[i], false);
+        }
+        secretCodeMap.clear();
+    }
+
+    //int[][] q = {{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {3, 7, 8, 9, 10}, {2, 5, 7, 9, 10}, {3, 4, 5, 6, 7}};
+    //int[] ans = {2, 3, 4, 3, 3};
+    /*
+        [3, 4, 7, 9, 10]
+        [3, 5, 7, 8, 9]
+        [3, 5, 7, 8, 10]
+     */
+    public static void findSecretCode(int[][] q, int[] ans, int index, int cnt) {
+        boolean flag = false;
+        boolean finish = false;
+        for (int i = index; i < q.length; i++) {
+            if (finish) break;
+            for (int j = 0; j < 5; j++) {
+                if (visited[i][j]) continue;
+                if (secretCodeMap.size() == 5) {
+                    if (test < 10) {
+                        test++;
+                        System.out.println();
+                        System.out.println("^^^ 조합 세팅 : " + secretCodeMap);
+                        System.out.println();
+                    }
+                    if (chkSecretCode(q, ans)) {
+                        addSecretCodeList();
+                        System.out.println("★★★조합코드 성공!★★★" + secretCodeList);
+                    }
+                    finish = true;
+                    break;
+                }
+
+                if (!secretCodeMap.getOrDefault(q[i][j],false)) { // 해당하는 값이 아직 조합코드에 없을 경우 추가
+                    secretCodeMap.put(q[i][j], true);
+                    cnt++;
+                    flag = true;
+                }
+
+                visited[i][j] = true;
+
+                if (cnt == ans[i]) { // 시스템 응답의 개수와 일치하므로 개수 초기화 후, 다음 인덱스로 이동
+                    if (test < 10) {
+                        //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
+                        System.out.println("i : " + i + " , j : " + j);
+                        System.out.println("index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
+                        System.out.println("@@@다음 인덱스 재귀함수 호출");
+                    }
+                    findSecretCode(q, ans,index+1, 0);
+                } else { //시스템 응답 개수가 모자르므로 현재 인덱스에서 재귀함수 호출
+                    if (test < 10) {
+                        //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
+                        System.out.println("i : " + i + " , j : " + j);
+                        System.out.println("index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
+                        System.out.println("### 현재 인덱스 재귀함수 호출");
+                    }
+                    findSecretCode(q, ans, index,  cnt);
+                }
+
+                visited[i][j] = false;
+                if (flag) {
+                    flag = false;
+                    secretCodeMap.remove(q[i][j]);
+                    cnt--;
+                }
+
+                if (test < 10) {
+                    //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
+                    System.out.println("i : " + i + " , j : " + j);
+                    System.out.println("종료 : index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
+                }
+
+            }
+        }
+    }
+
+    public static void addSecretCodeList() {
+        sb.setLength(0); // 초기화
+        Integer[] nums = secretCodeMap.keySet().stream().sorted().toArray(Integer[]::new);
+        for (Integer num : nums) sb.append(num+",");
+        sb.deleteCharAt(sb.length()-1);
+        secretCodeList.add(sb.toString());
+
+    }
+
+    public static boolean chkSecretCode(int[][] q, int[] ans) {
+        for (int i = 0; i < q.length; i++) {
+            int cnt = 0;
+            for (int j = 0; j < 5; j++) {
+                if (secretCodeMap.getOrDefault(q[i][j], false)) cnt++;
+            }
+            if (cnt != ans[i]) return false; // 시스템에서 전달한 힌트 개수가 다를 경우 암호 코드가 아니다.
+        }
+
+        return true;
     }
 }
