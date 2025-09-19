@@ -7,7 +7,7 @@ public class CrackTheSecretCode {
     public static boolean[][] visited;
     public static Map<Integer, Boolean> secretCodeMap = new HashMap<>();
     public static StringBuilder sb = new StringBuilder();
-    public static int test = 0;
+    public static int test = 10;
     public static void main(String[] args) {
         /*  비밀 코드 해독 (2025 프로그래머스 코드챌린지 1차 예선)
             문제 설명
@@ -156,31 +156,33 @@ public class CrackTheSecretCode {
             if (finish) break;
             for (int j = 0; j < 5; j++) {
                 if (visited[i][j]) continue;
-                if (secretCodeMap.size() == 5) {
-                    if (test < 10) {
-                        test++;
-                        System.out.println();
-                        System.out.println("^^^ 조합 세팅 : " + secretCodeMap);
-                        System.out.println();
-                    }
-                    if (chkSecretCode(q, ans)) {
-                        addSecretCodeList();
-                        System.out.println("★★★조합코드 성공!★★★" + secretCodeList);
-                    }
-                    finish = true;
-                    break;
-                }
-
+                test++;
                 if (!secretCodeMap.getOrDefault(q[i][j],false)) { // 해당하는 값이 아직 조합코드에 없을 경우 추가
                     secretCodeMap.put(q[i][j], true);
                     cnt++;
                     flag = true;
+
+                    if (secretCodeMap.size() == 5) {
+                        if (test < 50) {
+                            System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+                            System.out.println("^^^ 조합 세팅 : " + secretCodeMap);
+                            System.out.println();
+                        }
+                        if (chkSecretCode(q, ans)) {
+                            addSecretCodeList();
+                            System.out.println("★★★조합코드 성공!★★★" + secretCodeList);
+                        }
+                        finish = true;
+                        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+                        break;
+                    }
                 }
+
 
                 visited[i][j] = true;
 
                 if (cnt == ans[i]) { // 시스템 응답의 개수와 일치하므로 개수 초기화 후, 다음 인덱스로 이동
-                    if (test < 10) {
+                    if (test < 50) {
                         //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
                         System.out.println("i : " + i + " , j : " + j);
                         System.out.println("index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
@@ -188,7 +190,7 @@ public class CrackTheSecretCode {
                     }
                     findSecretCode(q, ans,index+1, 0);
                 } else { //시스템 응답 개수가 모자르므로 현재 인덱스에서 재귀함수 호출
-                    if (test < 10) {
+                    if (test < 50) {
                         //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
                         System.out.println("i : " + i + " , j : " + j);
                         System.out.println("index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
@@ -204,8 +206,9 @@ public class CrackTheSecretCode {
                     cnt--;
                 }
 
-                if (test < 10) {
+                if (test < 50) {
                     //System.out.println("!!!visitied!!"  + Arrays.deepToString(visited));
+                    System.out.println("!!");
                     System.out.println("i : " + i + " , j : " + j);
                     System.out.println("종료 : index : " + index + "  cnt : " + cnt + " 현재 인덱스 시스템 응답 : " + ans[i] + "   조합 : " + secretCodeMap);
                 }
