@@ -88,11 +88,34 @@ public class FlexibleWorkSystem {
         /* TC 1 result : 3 */
         int[] schedules = {700, 800, 1100};
         int[][] timelogs = {{710, 2359, 1050, 700, 650, 631, 659}, {800, 801, 805, 800, 759, 810, 809}, {1105, 1001, 1002, 600, 1059, 1001, 1100}};
-        
+        int startday = 5;
+
         /* TC 2 result : 2 */
         //int[] schedules = {730, 855, 700, 720};
         //int[][] timelogs = {{710, 700, 650, 735, 700, 931, 912}, {908, 901, 805, 815, 800, 831, 835}, {705, 701, 702, 705, 710, 710, 711}, {707, 731, 859, 913, 934, 931, 905}};
+        //int startday = 1;
+        
+        int answer = 0;
 
+        for (int i = 0; i < schedules.length; i++) {
+            if (checkTimeLog(schedules[i], timelogs[i], startday)) answer++;
+        }
+        System.out.println(answer);
+    }
 
+    public static boolean checkTimeLog(int time, int[] dailyTime, int startday) {
+        int maxTime = ((time + 10) % 100) >= 60 ? time + 10 + 40 : time + 10; // 분은 60분까지이므로 60분이상일 경우 40 값을 더하여 처리
+
+        for (int i = 0; i < dailyTime.length; i++) {
+            if (startday <= 5 && dailyTime[i] > maxTime) return false;
+
+            if (startday + 1 > 7) {
+                startday = 1;
+            } else {
+                startday++;
+            }
+        }
+
+        return true;
     }
 }
