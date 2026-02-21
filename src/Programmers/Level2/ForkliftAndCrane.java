@@ -1,6 +1,11 @@
 package Programmers.Level2;
 
+import java.util.Arrays;
+
 public class ForkliftAndCrane {
+    public static boolean[][] visited;
+    public static String[][] location;
+    public static int cnt;
     public static void main(String[] args) {
         /*
             지게차와크레인 (Level 2)
@@ -78,5 +83,67 @@ public class ForkliftAndCrane {
         /* TC 2 result : 4 */
         //String[] storage = {"HAH", "HBH", "HHH", "HAH", "HBH"};
         //String[] requests = {"C", "B", "B", "B", "B", "H"};
+
+        int answer = 0;
+        init(storage);
+
+        for (String str : requests) {
+            cnt++;
+            if (str.length() == 2) { // 크레인
+                DeliveryCrane(str.substring(0, 1));
+            } else { // 지게차
+                DeliveryForkLift(str.substring(0, 1));
+            }
+        }
+
+        for (int i = 0; i < visited.length; i++) {
+            for (int j = 0; j < visited[i].length; j++) {
+                if (!visited[i][j]) answer++;
+            }
+        }
+
+        System.out.println(answer);
+    }
+
+    public static void init(String[] storage) {
+        visited = new boolean[storage.length][storage[0].length()];
+        location = new String[storage.length][storage[0].length()];
+        for (int i = 0; i < storage.length; i++) {
+                location[i] = storage[i].split("");
+        }
+    }
+
+    public static void DeliveryCrane (String str) {
+        for (int i = 0; i < location.length; i++) {
+            for (int j = 0; j < location[i].length; j++) {
+                if (!visited[i][j] && str.equals(location[i][j])) {
+                    visited[i][j] = true;
+                    location[i][j] = String.valueOf(cnt);
+                }
+            }
+        }
+    }
+
+    public static void DeliveryForkLift (String str) {
+        for (int i = 0; i < location.length; i++) {
+            for (int j = 0; j < location[i].length; j++) {
+                if (chkTarget(i, j, str)) {
+                    visited[i][j] = true;
+                    location[i][j] = String.valueOf(cnt);
+                }
+            }
+        }
+    }
+
+    public static boolean chkTarget (int row, int col, String str) {
+        if (!visited[row][col]) return false;
+        else if (!str.equals(location[row][col])) return false;
+        else if ((int)location[row][col].charAt(0) < 65 || (int)location[row][col].charAt(0) > 90) return false;
+
+        /*if (col < 1 || col >) {
+
+        }*/
+
+        return true;
     }
 }
