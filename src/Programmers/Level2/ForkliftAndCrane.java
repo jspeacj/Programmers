@@ -102,6 +102,10 @@ public class ForkliftAndCrane {
             }
         }
 
+        for (String[] arr : location) {
+            System.out.println(Arrays.toString(arr));
+        }
+        System.out.println(Arrays.deepToString(visited));
         System.out.println(answer);
     }
 
@@ -136,14 +140,24 @@ public class ForkliftAndCrane {
     }
 
     public static boolean chkTarget (int row, int col, String str) {
-        if (!visited[row][col]) return false;
+        if (visited[row][col]) return false;
         else if (!str.equals(location[row][col])) return false;
-        else if ((int)location[row][col].charAt(0) < 65 || (int)location[row][col].charAt(0) > 90) return false;
+        else if (!chkAlphabet(location[row][col].charAt(0))) return false;
 
-        /*if (col < 1 || col >) {
-
-        }*/
-
+        dfs(row, col, str);
         return true;
+    }
+
+    public static boolean chkAlphabet (int asciiCode) {
+        return asciiCode >= 65 && asciiCode <= 90; // A(65) ~ Z(90)
+    }
+
+    public static void dfs(int row, int col, String str) {
+        visited[row][col] = true;
+        if (row > 0) {
+           // if ()
+        }
+
+        visited[row][col] = false;
     }
 }
