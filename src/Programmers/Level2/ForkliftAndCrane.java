@@ -1,11 +1,14 @@
 package Programmers.Level2;
 
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ForkliftAndCrane {
-    public static boolean[][] visited;
+    public static boolean[][] outListArrays;
     public static String[][] location;
     public static int cnt;
+    public static int[] dx = {-1, 1, 0, 0};
+    public static int[] dy = {0, 0, -1, 1};
     public static void main(String[] args) {
         /*
             지게차와크레인 (Level 2)
@@ -77,12 +80,23 @@ public class ForkliftAndCrane {
         */
 
         /* TC 1 result : 11 */
-        String[] storage = {"AZWQY", "CAABX", "BBDDA", "ACACA"};
-        String[] requests = {"A", "BB", "A"};
+        //String[] storage = {"AZWQY", "CAABX", "BBDDA", "ACACA"};
+        //String[] requests = {"A", "BB", "A"};
 
         /* TC 2 result : 4 */
         //String[] storage = {"HAH", "HBH", "HHH", "HAH", "HBH"};
         //String[] requests = {"C", "B", "B", "B", "B", "H"};
+
+        /* TC 3 result : 29 */
+        String[] storage = { "AAAAAA", "ABBBBA", "ABCCBA", "ABCCBA", "ABBBBB", "AAAAAA", };
+        String[] requests = { "B","B","B","C","C"};
+
+    /*
+        해당 문제 기반 완전 탐색 기법 알고리즘 정리 :
+        1. 재귀함수(dfs)의 좌표가 가장자리(테두리)일 경우 출고 가능한 상태이기 때문에 출고 가능 변수인 outChkFlag 값을 true로 하며 종료 처리한다.
+        2. 해당 좌표 기준  상하좌우를 기준으로 각각 이동 가능한 부분인지 체크한다. (상/하/좌/우 각각 조건문 기준 체크)
+        => 체크 기준 : Queue함수와 방문한 배열(visited)를 이용하여 진행한다.
+     */
 
         int answer = 0;
         init(storage);
@@ -96,21 +110,17 @@ public class ForkliftAndCrane {
             }
         }
 
-        for (int i = 0; i < visited.length; i++) {
-            for (int j = 0; j < visited[i].length; j++) {
-                if (!visited[i][j]) answer++;
+        for (int i = 0; i < outListArrays.length; i++) {
+            for (int j = 0; j < outListArrays[i].length; j++) {
+                if (!outListArrays[i][j]) answer++;
             }
         }
 
-        for (String[] arr : location) {
-            System.out.println(Arrays.toString(arr));
-        }
-        System.out.println(Arrays.deepToString(visited));
         System.out.println(answer);
     }
 
     public static void init(String[] storage) {
-        visited = new boolean[storage.length][storage[0].length()];
+        outListArrays = new boolean[storage.length][storage[0].length()];
         location = new String[storage.length][storage[0].length()];
         for (int i = 0; i < storage.length; i++) {
                 location[i] = storage[i].split("");
@@ -120,8 +130,8 @@ public class ForkliftAndCrane {
     public static void DeliveryCrane (String str) {
         for (int i = 0; i < location.length; i++) {
             for (int j = 0; j < location[i].length; j++) {
-                if (!visited[i][j] && str.equals(location[i][j])) {
-                    visited[i][j] = true;
+                if (str.equals(location[i][j])) {
+                    outListArrays[i][j] = true;
                     location[i][j] = String.valueOf(cnt);
                 }
             }
@@ -132,7 +142,7 @@ public class ForkliftAndCrane {
         for (int i = 0; i < location.length; i++) {
             for (int j = 0; j < location[i].length; j++) {
                 if (chkTarget(i, j, str)) {
-                    visited[i][j] = true;
+                    outListArrays[i][j] = true;
                     location[i][j] = String.valueOf(cnt);
                 }
             }
@@ -140,24 +150,41 @@ public class ForkliftAndCrane {
     }
 
     public static boolean chkTarget (int row, int col, String str) {
-        if (visited[row][col]) return false;
+        if (outListArrays[row][col]) return false;
         else if (!str.equals(location[row][col])) return false;
-        else if (!chkAlphabet(location[row][col].charAt(0))) return false;
 
-        dfs(row, col, str);
-        return true;
+        return bfs(row, col);
     }
 
     public static boolean chkAlphabet (int asciiCode) {
         return asciiCode >= 65 && asciiCode <= 90; // A(65) ~ Z(90)
     }
 
-    public static void dfs(int row, int col, String str) {
-        visited[row][col] = true;
-        if (row > 0) {
-           // if ()
+    public static boolean bfs (int x, int y) {
+        Queue<int[]> queue = new LinkedList<>();
+        int maxRow = location.length;
+        int maxCol = location[0].length;
+        boolean[][] visit = new boolean[maxRow][maxCol];
+        visit[x][y] = true;
+        queue.add(new int[]{x, y});
+
+        while (!queue.isEmpty()) {
+            int[] tmp = queue.poll();
+            int nx = tmp[0];
+            int ny = tmp[1];
+            for (int i = 0; i < 4; i++) {
+                int nextX = nx + dx[i];
+                int nextY = ny + dy[i];
+
+                if (nextX < 0 || nextX > maxRow-1 || nextY < 0 || nextY > maxCol-1) return true;
+                if (!visit[nextX][nextY] && !chkAlphabet(location[nextX][nextY].charAt(0))
+                        && !String.valueOf(cnt).equals(location[nextX][nextY])) {
+                    visit[nextX][nextY] = true;
+                    queue.add(new int[]{nextX,nextY});
+                }
+            }
         }
 
-        visited[row][col] = false;
+        return false;
     }
 }
