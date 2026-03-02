@@ -2,6 +2,7 @@ package Programmers.Level1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class PCCEDataAnalysis {
@@ -103,9 +104,7 @@ public class PCCEDataAnalysis {
             answer[i] = data[indexList.get(i)];
         }
 
-        Arrays.sort(answer, (int[] arr1, int[] arr2) -> {
-            return arr1[sortIndex] - arr2[sortIndex];
-        });
+        Arrays.sort(answer, Comparator.comparingInt((int[] arr) -> arr[sortIndex]));
 
         return answer;
     }

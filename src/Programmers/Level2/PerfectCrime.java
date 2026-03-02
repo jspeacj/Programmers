@@ -1,6 +1,10 @@
 package Programmers.Level2;
 
+import java.util.Arrays;
+
 public class PerfectCrime {
+    public static int minAEvidence = -1;
+    public static int[] evidenceArr = new int[2];
     public static void main(String[] args) {
         /*
             완전 범죄 (2025 프로그래머스 코드챌린지 2차 예선)
@@ -72,9 +76,9 @@ public class PerfectCrime {
          */
 
         /* TC  1 result : 2 */
-        int[][] info = {{1, 2}, {2, 3}, {2, 1}};
-        int n = 4;
-        int m = 4;
+        //int[][] info = {{1, 2}, {2, 3}, {2, 1}};
+        //int n = 4;
+        //int m = 4;
 
         /* TC  2 result : 0 */
         //int[][] info = {{1, 2}, {2, 3}, {2, 1}};
@@ -91,6 +95,80 @@ public class PerfectCrime {
         //int n = 6;
         //int m = 1;
 
+        /* TC  5 result : 4 */
+        int[][] info = {{1, 3}, {1, 3}, {1, 1}, {1, 1}, {1, 1}, {2, 3}, {2, 3}};
+        int n = 6;
+        int m = 7;
+        
+        /*
+            풀이 방법 :
+            1. 완전 탐색 기법으로 모든 경우의 수를 계산해야한다. (재귀 함수 이용)
+            2. 전달받은 인덱스 인풋 파라미터를 기준으로 순차적으로 A부터 훔칠 수 있다면 A가 훔칠 수 있는지 체크한다.
+            (A가 훔칠 수 없다면 B가 훔칠 수 있는지 체크하며 만약 둘 다 훔칠 수 없다면 재귀 함수 호출 없이 종료한다.)
+            3. A 또는 B가 훔칠 수 있다면 해당 훔친 값의 흔적을 넣으며 재귀 함수를 호출한다. (호출 이후에는 훔친 값의 흔적값을 원상 복구한다.)
+            (이때, 인풋 파라미터는 다음 인덱스로 진행할 수 있도록 해야한다.)
+            4. 만약 호출 받은 인덱스 값이 info의 길이보다 클 경우(= 모두 훔치기 완료),
+            전역 변수 minAEvidence 값보다 작을 경우 해당 값을 세팅한다.
+            (만약 minAEvidence 값이 -1인 상태일 경우 최초 세팅이므로 체크 없이 바로 세팅한다.)
+            5. 완전 탐색 완료 이후 A의 최소 흔적 값인 minAEvidence 값을 리턴한다.
+        */
+        
+        Arrays.sort(info, (int[] a, int[] b) -> {
+            if (a[1] == b[1]) return b[0] - a[0];
+            else return a[1] - b[1];
+        });
 
+        //System.out.println(chkSteal(info, n, m));
+        System.out.println(Arrays.deepToString(info));
+
+        if (chkPossibleSteal(info, n, m)) bfs(info, n, m, evidenceArr[0], 0, info.length);
+        System.out.println(minAEvidence);
+    }
+
+    public static int chkSteal(int[][] info, int n, int m) {
+        int minA = 0;
+        int minB = 0;
+
+        for (int[] arr : info) {
+            if (minB + arr[1] < m) minB += arr[1];
+            else if (minA + arr[0] < n) minA += arr[0];
+            else return -1;
+        }
+
+        return minA;
+    }
+
+    public static boolean chkPossibleSteal(int[][] info, int n, int m) {
+        int sumA = 0, sumB = 0;
+        for (int[] arr : info) {
+            if (sumB + arr[1] < m) sumB += arr[1];
+            else if (sumA + arr[0] < n) sumA += arr[0];
+            else return false;
+        }
+
+        if (sumA == 0) minAEvidence = sumA;
+        return true;
+    }
+
+    public static void bfs(int[][] info, int n, int m, int minA, int index, int maxLength) {
+        if (minAEvidence != -1 && minAEvidence <= minA) return;
+        else if (minAEvidence == 0) return;
+        else if (index >= maxLength) {
+            if (minAEvidence == -1) minAEvidence = evidenceArr[0];
+            else if (minAEvidence > evidenceArr[0]) minAEvidence = evidenceArr[0];
+            return;
+        }
+
+        if (evidenceArr[1] + info[index][1] < m) {
+            evidenceArr[1] += info[index][1];
+            bfs(info, n, m, evidenceArr[0], index + 1, maxLength);
+            evidenceArr[1] -= info[index][1];
+        }
+        
+        if (evidenceArr[0] + info[index][0] < n) {
+            evidenceArr[0] += info[index][0];
+            bfs(info, n, m, evidenceArr[0], index + 1, maxLength);
+            evidenceArr[0] -= info[index][0];
+        }
     }
 }
